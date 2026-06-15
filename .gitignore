@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Local dev server logs
+dev-out.txt
+dev-err.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
