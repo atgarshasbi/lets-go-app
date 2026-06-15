@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: linear-gradient(135deg, #c3f0fa 0%, #fde8f5 100%);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-10px); }
+  40%       { transform: translateX(10px); }
+  60%       { transform: translateX(-10px); }
+  80%       { transform: translateX(10px); }
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.93); }
+  70%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
