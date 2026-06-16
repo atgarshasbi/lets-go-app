@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import TaskCard from './TaskCard';
+import CollapsibleSection from './CollapsibleSection';
 import ProgressBar from './ProgressBar';
 import StarCounter from './StarCounter';
 import CountdownTimer from './CountdownTimer';
@@ -7,14 +7,12 @@ import CelebrationScreen from './CelebrationScreen';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, timerResetToken,
-  taskPool, todayList, completedToday,
-  handleTaskToggle, onParentPress,
+  sections, completedToday,
+  handleTaskToggle, handleResetToday, onParentPress,
 }) {
-  const todayTasks = todayList
-    .map(id => taskPool.find(t => t.id === id))
-    .filter(Boolean);
-
-  const allDone = todayTasks.length > 0 && completedToday.length >= todayTasks.length;
+  const allTasks = sections.flatMap(s => s.tasks);
+  const doneCount = allTasks.filter(t => completedToday.includes(t.id)).length;
+  const allDone = allTasks.length > 0 && doneCount >= allTasks.length;
   const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
@@ -23,14 +21,14 @@ export default function ChildView({
 
   useEffect(() => {
     if (!allDone) setShowCelebration(false);
-  }, [completedToday.length]);
+  }, [doneCount]);
 
   return (
     <div className="min-h-screen flex flex-col items-center py-6 px-4 relative">
       {showCelebration && (
         <CelebrationScreen
           childName={childName}
-          starsEarned={todayTasks.length}
+          starsEarned={allTasks.length}
           onClose={() => setShowCelebration(false)}
         />
       )}
@@ -52,20 +50,29 @@ export default function ChildView({
         />
       )}
 
-      <ProgressBar done={completedToday.length} total={todayTasks.length} />
+      <ProgressBar done={doneCount} total={allTasks.length} />
 
-      <div className="w-full max-w-md mt-4 space-y-3 pb-16">
-        {todayTasks.length === 0 ? (
+      {doneCount > 0 && (
+        <button
+          onClick={handleResetToday}
+          className="mt-3 bg-white/80 hover:bg-white active:scale-95 border-2 border-purple-200 text-purple-600 font-bold text-sm py-2 px-5 rounded-full shadow transition"
+        >
+          🔄 Start Over
+        </button>
+      )}
+
+      <div className="w-full max-w-md mt-4 space-y-4 pb-16">
+        {sections.length === 0 ? (
           <div className="text-center text-gray-500 py-8 text-lg font-bold">
             No tasks today!<br />Ask a parent to add some. 😊
           </div>
         ) : (
-          todayTasks.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              done={completedToday.includes(task.id)}
-              onToggle={() => handleTaskToggle(task.id)}
+          sections.map(section => (
+            <CollapsibleSection
+              key={section.id}
+              section={section}
+              completedToday={completedToday}
+              onToggleTask={handleTaskToggle}
             />
           ))
         )}

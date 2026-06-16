@@ -13,6 +13,50 @@ export const DEFAULT_POOL = [
 
 export const DEFAULT_TODAY = ['1', '2', '3', '4', '5'];
 
+export const DEFAULT_SECTIONS = [
+  {
+    id: 'bedtime',
+    title: 'Bedtime',
+    emoji: '🌙',
+    tasks: [
+      { id: 'bt-dinner', emoji: '🍽️', label: 'Dinner' },
+      { id: 'bt-brush', emoji: '🪥', label: 'Brush Teeth' },
+      { id: 'bt-potty', emoji: '🚽', label: 'Potty' },
+      { id: 'bt-diaper', emoji: '🧷', label: 'Diaper' },
+      { id: 'bt-pajamas', emoji: '😴', label: 'Pajamas On' },
+      { id: 'bt-book', emoji: '📚', label: 'Book' },
+      { id: 'bt-humidifier', emoji: '💨', label: 'Humidifier On' },
+      { id: 'bt-lamp', emoji: '💡', label: 'Lamp Off' },
+    ],
+  },
+  {
+    id: 'morning',
+    title: 'Morning',
+    emoji: '☀️',
+    tasks: [
+      { id: 'mo-diaper-off', emoji: '🧷', label: 'Diaper Off' },
+      { id: 'mo-underwear', emoji: '🩲', label: 'Underwear On' },
+      { id: 'mo-shirt', emoji: '👕', label: 'Shirt On' },
+      { id: 'mo-pants', emoji: '👖', label: 'Pants On' },
+      { id: 'mo-socks', emoji: '🧦', label: 'Socks On' },
+      { id: 'mo-wash', emoji: '🧼', label: 'Wash Hands & Face' },
+      { id: 'mo-make-breakfast', emoji: '🍳', label: 'Make Breakfast' },
+      { id: 'mo-eat-breakfast', emoji: '🥣', label: 'Eat Breakfast' },
+      { id: 'mo-vitamin-d', emoji: '💊', label: 'Eat Vitamin D' },
+      { id: 'mo-shoes', emoji: '👟', label: 'Shoes On' },
+    ],
+  },
+  {
+    id: 'potty',
+    title: 'Potty Time',
+    emoji: '🚽',
+    tasks: [
+      { id: 'pt-dry', emoji: '✨', label: 'Pants & Underwear Dry' },
+      { id: 'pt-wash', emoji: '🧼', label: 'Wash Hands' },
+    ],
+  },
+];
+
 export const EMOJI_OPTIONS = [
   '🪥', '👗', '🥣', '🎒', '👟', '🛁', '📚', '🧹',
   '🌙', '😴', '🎨', '🏃', '🍎', '🧸', '🦷', '👕',

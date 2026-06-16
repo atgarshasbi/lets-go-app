@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { DEFAULT_POOL, DEFAULT_TODAY } from './data/defaultData';
+import { DEFAULT_POOL, DEFAULT_TODAY, DEFAULT_SECTIONS } from './data/defaultData';
 import ChildView from './components/ChildView';
 import PinEntry from './components/PinEntry';
 import ParentView from './components/ParentView';
@@ -15,6 +15,7 @@ export default function App() {
   const [timerMinutes, setTimerMinutes] = useLocalStorage('timerMinutes', 15);
   const [taskPool, setTaskPool] = useLocalStorage('taskPool', DEFAULT_POOL);
   const [todayList, setTodayList] = useLocalStorage('todayList', DEFAULT_TODAY);
+  const [sections, setSections] = useLocalStorage('sections', DEFAULT_SECTIONS);
   const [completedToday, setCompletedToday] = useLocalStorage('completedToday', []);
 
   function handleTaskToggle(taskId) {
@@ -41,6 +42,7 @@ export default function App() {
     timerMinutes, setTimerMinutes,
     taskPool, setTaskPool,
     todayList, setTodayList,
+    sections, setSections,
     completedToday,
     handleTaskToggle,
     handleResetToday,
