@@ -12,7 +12,8 @@ export default function App() {
   const [childName, setChildName] = useLocalStorage('childName', 'Superstar');
   const [pin, setPin] = useLocalStorage('pin', '1234');
   const [totalStars, setTotalStars] = useLocalStorage('totalStars', 0);
-  const [timerMinutes, setTimerMinutes] = useLocalStorage('timerMinutes', 15);
+  const [timerMinutes, setTimerMinutes] = useLocalStorage('timerMinutes', 1);
+  const [timerMaxMinutes, setTimerMaxMinutes] = useLocalStorage('timerMaxMinutes', 3);
   const [taskPool, setTaskPool] = useLocalStorage('taskPool', DEFAULT_POOL);
   const [todayList, setTodayList] = useLocalStorage('todayList', DEFAULT_TODAY);
   const [sections, setSections] = useLocalStorage('sections', DEFAULT_SECTIONS);
@@ -40,6 +41,7 @@ export default function App() {
     pin, setPin,
     totalStars,
     timerMinutes, setTimerMinutes,
+    timerMaxMinutes, setTimerMaxMinutes,
     taskPool, setTaskPool,
     todayList, setTodayList,
     sections, setSections,

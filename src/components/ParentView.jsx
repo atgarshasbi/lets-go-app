@@ -7,6 +7,7 @@ export default function ParentView({
   childName, setChildName,
   pin, setPin,
   timerMinutes, setTimerMinutes,
+  timerMaxMinutes, setTimerMaxMinutes,
   taskPool, setTaskPool,
   todayList, setTodayList,
   completedToday, handleResetToday,
@@ -63,6 +64,8 @@ export default function ParentView({
             setPin={setPin}
             timerMinutes={timerMinutes}
             setTimerMinutes={setTimerMinutes}
+            timerMaxMinutes={timerMaxMinutes}
+            setTimerMaxMinutes={setTimerMaxMinutes}
           />
         )}
 

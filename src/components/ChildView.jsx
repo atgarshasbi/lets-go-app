@@ -6,7 +6,7 @@ import CountdownTimer from './CountdownTimer';
 import CelebrationScreen from './CelebrationScreen';
 
 export default function ChildView({
-  childName, totalStars, timerMinutes, timerResetToken,
+  childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
   sections, completedToday,
   handleTaskToggle, handleResetToday, onParentPress,
 }) {
@@ -45,6 +45,8 @@ export default function ChildView({
       {timerMinutes > 0 && (
         <CountdownTimer
           minutes={timerMinutes}
+          setMinutes={setTimerMinutes}
+          maxMinutes={timerMaxMinutes}
           running={!allDone}
           resetToken={timerResetToken}
         />

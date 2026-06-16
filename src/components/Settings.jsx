@@ -1,8 +1,12 @@
 import { useState } from 'react';
 
-export default function Settings({ childName, setChildName, pin, setPin, timerMinutes, setTimerMinutes }) {
+export default function Settings({
+  childName, setChildName, pin, setPin,
+  timerMinutes, setTimerMinutes, timerMaxMinutes, setTimerMaxMinutes,
+}) {
   const [name, setName] = useState(childName);
   const [timer, setTimer] = useState(String(timerMinutes));
+  const [maxTimer, setMaxTimer] = useState(String(timerMaxMinutes));
   const [generalSaved, setGeneralSaved] = useState(false);
 
   const [currentPin, setCurrentPin] = useState('');
@@ -12,8 +16,16 @@ export default function Settings({ childName, setChildName, pin, setPin, timerMi
 
   function saveGeneral() {
     if (name.trim()) setChildName(name.trim());
+
+    // Max first, so we can clamp the start time to it.
+    let max = parseInt(maxTimer, 10);
+    if (isNaN(max) || max < 1) max = 1;
+    if (max > 30) max = 30;
+    setTimerMaxMinutes(max);
+
     const mins = parseInt(timer, 10);
-    if (!isNaN(mins) && mins >= 0 && mins <= 120) setTimerMinutes(mins);
+    if (!isNaN(mins) && mins >= 0) setTimerMinutes(Math.min(mins, max));
+
     setGeneralSaved(true);
     setTimeout(() => setGeneralSaved(false), 2000);
   }
@@ -45,14 +57,26 @@ export default function Settings({ childName, setChildName, pin, setPin, timerMi
         />
 
         <label className="block text-sm font-bold text-gray-600 mb-1">
-          Timer duration (minutes — set to 0 to hide timer)
+          Start time (minutes — set to 0 to hide timer)
         </label>
         <input
           type="number"
           min="0"
-          max="120"
+          max="30"
           value={timer}
           onChange={e => setTimer(e.target.value)}
+          className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none mb-4 transition"
+        />
+
+        <label className="block text-sm font-bold text-gray-600 mb-1">
+          Maximum time (minutes — how far the slider can go)
+        </label>
+        <input
+          type="number"
+          min="1"
+          max="30"
+          value={maxTimer}
+          onChange={e => setMaxTimer(e.target.value)}
           className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none mb-4 transition"
         />
 
