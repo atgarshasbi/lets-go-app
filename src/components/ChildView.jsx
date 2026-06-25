@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import CollapsibleSection from './CollapsibleSection';
 import ProgressBar from './ProgressBar';
-import StarCounter from './StarCounter';
+import StarJar from './StarJar';
 import CountdownTimer from './CountdownTimer';
 import CelebrationScreen from './CelebrationScreen';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
   sections, completedToday,
-  handleTaskToggle, handleResetToday, onParentPress,
+  handleTaskToggle, handleResetToday, handleBonusStar, onParentPress,
 }) {
   const allTasks = sections.flatMap(s => s.tasks);
   const doneCount = allTasks.filter(t => completedToday.includes(t.id)).length;
@@ -28,7 +28,7 @@ export default function ChildView({
       {showCelebration && (
         <CelebrationScreen
           childName={childName}
-          starsEarned={allTasks.length}
+          starsEarned={totalStars}
           onClose={() => setShowCelebration(false)}
         />
       )}
@@ -40,7 +40,6 @@ export default function ChildView({
         </h1>
       </div>
 
-      <StarCounter total={totalStars} />
 
       {timerMinutes > 0 && (
         <CountdownTimer
@@ -63,7 +62,7 @@ export default function ChildView({
         </button>
       )}
 
-      <div className="w-full max-w-md mt-4 space-y-4 pb-16">
+      <div className="w-full max-w-md mt-4 space-y-4">
         {sections.length === 0 ? (
           <div className="text-center text-gray-500 py-8 text-lg font-bold">
             No tasks today!<br />Ask a parent to add some. 😊
@@ -79,6 +78,15 @@ export default function ChildView({
           ))
         )}
       </div>
+
+      <StarJar totalStars={totalStars} onBonusStar={handleBonusStar} />
+
+      <button
+        onClick={() => setShowCelebration(true)}
+        className="mb-6 bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 active:scale-95 text-white text-2xl font-black py-4 px-10 rounded-full shadow-xl transition-all duration-150"
+      >
+        🎉 All Done!
+      </button>
 
       <button
         onClick={onParentPress}

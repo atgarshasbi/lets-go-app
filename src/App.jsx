@@ -30,8 +30,12 @@ export default function App() {
     });
   }
 
+  function handleBonusStar() {
+    setTotalStars(s => s + 1);
+  }
+
   function handleResetToday() {
-    setTotalStars(s => Math.max(0, s - completedToday.length));
+    setTotalStars(0);
     setCompletedToday([]);
     setTimerResetToken(t => t + 1);
   }
@@ -48,6 +52,7 @@ export default function App() {
     completedToday,
     handleTaskToggle,
     handleResetToday,
+    handleBonusStar,
   };
 
   if (view === 'pin') {
