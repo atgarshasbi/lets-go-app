@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { CHARACTERS } from '../theme';
 
-export default function CelebrationScreen({ childName, starsEarned, onClose }) {
+export default function CelebrationScreen({ childName, starsEarned, onClose, celebrationCharacter = 'trophy' }) {
   useEffect(() => {
     const end = Date.now() + 4000;
     const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
@@ -14,15 +15,13 @@ export default function CelebrationScreen({ childName, starsEarned, onClose }) {
     frame();
   }, []);
 
+  const character = CHARACTERS[celebrationCharacter] || CHARACTERS.trophy;
   const starCount = Math.min(starsEarned, 10);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-pink-300 via-yellow-200 to-purple-300 p-6">
-      <div
-        className="text-8xl mb-4"
-        style={{ animation: 'bounceIn 0.6s ease-out both' }}
-      >
-        🦄
+      <div className="text-8xl mb-4" style={{ animation: 'bounceIn 0.6s ease-out both' }}>
+        {character.emoji}
       </div>
 
       <h1

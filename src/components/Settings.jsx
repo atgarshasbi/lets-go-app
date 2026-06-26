@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { THEMES, CHARACTERS } from '../theme';
 
 export default function Settings({
   childName, setChildName, pin, setPin,
   timerMinutes, setTimerMinutes, timerMaxMinutes, setTimerMaxMinutes,
+  themeKey, setThemeKey, celebrationCharacter, setCelebrationCharacter,
 }) {
   const [name, setName] = useState(childName);
   const [timer, setTimer] = useState(String(timerMinutes));
@@ -14,18 +16,16 @@ export default function Settings({
   const [confirmPin, setConfirmPin] = useState('');
   const [pinMsg, setPinMsg] = useState('');
 
+  const theme = THEMES[themeKey] || THEMES.purple;
+
   function saveGeneral() {
     if (name.trim()) setChildName(name.trim());
-
-    // Max first, so we can clamp the start time to it.
     let max = parseInt(maxTimer, 10);
     if (isNaN(max) || max < 1) max = 1;
     if (max > 30) max = 30;
     setTimerMaxMinutes(max);
-
     const mins = parseInt(timer, 10);
     if (!isNaN(mins) && mins >= 0) setTimerMinutes(Math.min(mins, max));
-
     setGeneralSaved(true);
     setTimeout(() => setGeneralSaved(false), 2000);
   }
@@ -45,51 +45,97 @@ export default function Settings({
 
   return (
     <div className="space-y-4">
+      {/* General */}
       <div className="bg-white rounded-2xl shadow p-4">
-        <h2 className="text-lg font-black text-purple-700 mb-3">⚙️ General</h2>
+        <h2 className="text-lg font-black mb-3" style={{ color: theme.primary }}>⚙️ General</h2>
 
         <label className="block text-sm font-bold text-gray-600 mb-1">Child&apos;s name</label>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
-          className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none mb-4 transition"
+          className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold mb-4 transition"
+          onFocus={e => (e.target.style.borderColor = theme.primary)}
+          onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
         />
 
         <label className="block text-sm font-bold text-gray-600 mb-1">
-          Start time (minutes — set to 0 to hide timer)
+          Start time (minutes — 0 to hide timer)
         </label>
         <input
-          type="number"
-          min="0"
-          max="30"
-          value={timer}
+          type="number" min="0" max="30" value={timer}
           onChange={e => setTimer(e.target.value)}
-          className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none mb-4 transition"
+          className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold mb-4 transition"
+          onFocus={e => (e.target.style.borderColor = theme.primary)}
+          onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
         />
 
         <label className="block text-sm font-bold text-gray-600 mb-1">
           Maximum time (minutes — how far the slider can go)
         </label>
         <input
-          type="number"
-          min="1"
-          max="30"
-          value={maxTimer}
+          type="number" min="1" max="30" value={maxTimer}
           onChange={e => setMaxTimer(e.target.value)}
-          className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none mb-4 transition"
+          className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold mb-4 transition"
+          onFocus={e => (e.target.style.borderColor = theme.primary)}
+          onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
         />
 
         <button
           onClick={saveGeneral}
-          className="w-full py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl transition"
+          className="w-full py-3 text-white font-bold rounded-xl transition active:scale-95"
+          style={{ backgroundColor: theme.primary }}
         >
           {generalSaved ? '✅ Saved!' : 'Save'}
         </button>
       </div>
 
+      {/* Theme color */}
       <div className="bg-white rounded-2xl shadow p-4">
-        <h2 className="text-lg font-black text-purple-700 mb-3">🔒 Change PIN</h2>
+        <h2 className="text-lg font-black mb-3" style={{ color: theme.primary }}>🎨 Theme Color</h2>
+        <div className="flex gap-3 flex-wrap">
+          {Object.entries(THEMES).map(([key, colors]) => (
+            <button
+              key={key}
+              onClick={() => setThemeKey(key)}
+              className="w-10 h-10 rounded-full transition-all active:scale-95"
+              style={{
+                backgroundColor: colors.primary,
+                transform: themeKey === key ? 'scale(1.3)' : 'scale(1)',
+                boxShadow: themeKey === key
+                  ? `0 0 0 3px white, 0 0 0 5px ${colors.primary}`
+                  : '0 1px 3px rgba(0,0,0,0.2)',
+              }}
+              title={key}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* All Done character */}
+      <div className="bg-white rounded-2xl shadow p-4">
+        <h2 className="text-lg font-black mb-3" style={{ color: theme.primary }}>🎊 All Done Screen</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {Object.entries(CHARACTERS).map(([key, { emoji, label }]) => (
+            <button
+              key={key}
+              onClick={() => setCelebrationCharacter(key)}
+              className="flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition active:scale-95"
+              style={{
+                borderColor: celebrationCharacter === key ? theme.primary : '#e5e7eb',
+                backgroundColor: celebrationCharacter === key ? theme.light : 'transparent',
+              }}
+            >
+              <span className="text-3xl">{emoji}</span>
+              <span className="text-xs font-bold text-gray-600">{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Change PIN */}
+      <div className="bg-white rounded-2xl shadow p-4">
+        <h2 className="text-lg font-black mb-1" style={{ color: theme.primary }}>🔒 Change PIN</h2>
         <p className="text-xs text-gray-400 font-bold mb-3">Default PIN is 1234</p>
 
         {[
@@ -105,8 +151,10 @@ export default function Settings({
               maxLength={4}
               value={val}
               onChange={e => onChange(e.target.value)}
-              className="w-full border-2 border-purple-200 focus:border-purple-500 rounded-xl px-4 py-2 font-bold outline-none transition tracking-widest text-center text-xl"
+              className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold transition tracking-widest text-center text-xl"
               placeholder="••••"
+              onFocus={e => (e.target.style.borderColor = theme.primary)}
+              onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
             />
           </div>
         ))}
@@ -119,7 +167,8 @@ export default function Settings({
 
         <button
           onClick={changePin}
-          className="w-full py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl transition"
+          className="w-full py-3 text-white font-bold rounded-xl transition active:scale-95"
+          style={{ backgroundColor: theme.primary }}
         >
           Change PIN
         </button>

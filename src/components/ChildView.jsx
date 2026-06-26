@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 import CollapsibleSection from './CollapsibleSection';
 import ProgressBar from './ProgressBar';
-import StarJar from './StarJar';
+import StarCounter from './StarCounter';
 import CountdownTimer from './CountdownTimer';
 import CelebrationScreen from './CelebrationScreen';
+import { useTheme } from '../theme';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
-  sections, completedToday,
-  handleTaskToggle, handleResetToday, handleBonusStar, onParentPress,
+  sections, completedToday, celebrationCharacter,
+  handleTaskToggle, handleResetToday, onParentPress,
 }) {
-  const allTasks = sections.flatMap(s => s.tasks);
+  const theme = useTheme();
+  const visibleSections = sections.filter(s => s.enabled !== false);
+  const allTasks = visibleSections.flatMap(s => s.tasks);
   const doneCount = allTasks.filter(t => completedToday.includes(t.id)).length;
   const allDone = allTasks.length > 0 && doneCount >= allTasks.length;
   const [showCelebration, setShowCelebration] = useState(false);
@@ -28,18 +31,20 @@ export default function ChildView({
       {showCelebration && (
         <CelebrationScreen
           childName={childName}
-          starsEarned={totalStars}
+          starsEarned={allTasks.length}
+          celebrationCharacter={celebrationCharacter}
           onClose={() => setShowCelebration(false)}
         />
       )}
 
       <div className="text-center mb-3">
         <div className="text-5xl mb-1">🌟</div>
-        <h1 className="text-3xl font-black text-purple-700 drop-shadow">
+        <h1 className="text-3xl font-black drop-shadow" style={{ color: theme.primary }}>
           Hi, {childName}!
         </h1>
       </div>
 
+      <StarCounter total={totalStars} />
 
       {timerMinutes > 0 && (
         <CountdownTimer
@@ -56,19 +61,20 @@ export default function ChildView({
       {doneCount > 0 && (
         <button
           onClick={handleResetToday}
-          className="mt-3 bg-white/80 hover:bg-white active:scale-95 border-2 border-purple-200 text-purple-600 font-bold text-sm py-2 px-5 rounded-full shadow transition"
+          className="mt-3 bg-white/80 hover:bg-white active:scale-95 border-2 text-gray-500 font-bold text-sm py-2 px-5 rounded-full shadow transition"
+          style={{ borderColor: theme.border }}
         >
           🔄 Start Over
         </button>
       )}
 
-      <div className="w-full max-w-md mt-4 space-y-4">
-        {sections.length === 0 ? (
+      <div className="w-full max-w-md mt-4 space-y-4 pb-16">
+        {visibleSections.length === 0 ? (
           <div className="text-center text-gray-500 py-8 text-lg font-bold">
             No tasks today!<br />Ask a parent to add some. 😊
           </div>
         ) : (
-          sections.map(section => (
+          visibleSections.map(section => (
             <CollapsibleSection
               key={section.id}
               section={section}
@@ -78,15 +84,6 @@ export default function ChildView({
           ))
         )}
       </div>
-
-      <StarJar totalStars={totalStars} onBonusStar={handleBonusStar} />
-
-      <button
-        onClick={() => setShowCelebration(true)}
-        className="mb-6 bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 active:scale-95 text-white text-2xl font-black py-4 px-10 rounded-full shadow-xl transition-all duration-150"
-      >
-        🎉 All Done!
-      </button>
 
       <button
         onClick={onParentPress}

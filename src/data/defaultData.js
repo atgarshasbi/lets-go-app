@@ -18,6 +18,7 @@ export const DEFAULT_SECTIONS = [
     id: 'bedtime',
     title: 'Bedtime',
     emoji: '🌙',
+    enabled: true,
     tasks: [
       { id: 'bt-dinner', emoji: '🍽️', label: 'Dinner' },
       { id: 'bt-brush', emoji: '🪥', label: 'Brush Teeth' },
@@ -33,6 +34,7 @@ export const DEFAULT_SECTIONS = [
     id: 'morning',
     title: 'Morning',
     emoji: '☀️',
+    enabled: true,
     tasks: [
       { id: 'mo-diaper-off', emoji: '🧷', label: 'Diaper Off' },
       { id: 'mo-underwear', emoji: '🩲', label: 'Underwear On' },
@@ -50,6 +52,7 @@ export const DEFAULT_SECTIONS = [
     id: 'potty',
     title: 'Potty Time',
     emoji: '🚽',
+    enabled: true,
     tasks: [
       { id: 'pt-dry', emoji: '✨', label: 'Pants & Underwear Dry' },
       { id: 'pt-wash', emoji: '🧼', label: 'Wash Hands' },
