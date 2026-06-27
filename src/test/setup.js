@@ -34,21 +34,29 @@ const makeFilter = () => ({
   Q: { value: 1 },
 });
 
-global.AudioContext = vi.fn(() => ({
-  createOscillator: vi.fn(makeOscillator),
-  createGain: vi.fn(makeGain),
-  createBiquadFilter: vi.fn(makeFilter),
-  createBuffer: vi.fn(() => ({
-    getChannelData: vi.fn(() => new Float32Array(1024)),
-  })),
-  createBufferSource: vi.fn(makeBufferSource),
-  currentTime: 0,
-  sampleRate: 44100,
-  state: 'running',
-  resume: vi.fn().mockResolvedValue(undefined),
-  destination: {},
-}));
+// Modules cache the AudioContext instance, so new AudioContext() is only called once.
+// We keep a persistent reference so tests can check method calls even after vi.clearAllMocks().
+let _audioCtxInstance = null;
+global.AudioContext = vi.fn(() => {
+  if (!_audioCtxInstance) {
+    _audioCtxInstance = {
+      createOscillator: vi.fn(makeOscillator),
+      createGain: vi.fn(makeGain),
+      createBiquadFilter: vi.fn(makeFilter),
+      createBuffer: vi.fn(() => ({ getChannelData: vi.fn(() => new Float32Array(1024)) })),
+      createBufferSource: vi.fn(makeBufferSource),
+      currentTime: 0,
+      sampleRate: 44100,
+      state: 'running',
+      resume: vi.fn().mockResolvedValue(undefined),
+      destination: {},
+    };
+  }
+  return _audioCtxInstance;
+});
 global.webkitAudioContext = global.AudioContext;
+// Expose getter so tests can check createOscillator etc. on the cached instance
+global.__audioCtx = () => _audioCtxInstance;
 
 // ── Speech Synthesis ────────────────────────────────────────────────────────
 global.speechSynthesis = {
