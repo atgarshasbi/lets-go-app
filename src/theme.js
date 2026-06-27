@@ -20,3 +20,6 @@ export const CHARACTERS = {
 
 export const ThemeContext = createContext(THEMES.purple);
 export const useTheme = () => useContext(ThemeContext);
+
+export const SoundContext = createContext(true);
+export const useSound = () => useContext(SoundContext);

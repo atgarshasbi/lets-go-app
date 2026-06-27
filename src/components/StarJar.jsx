@@ -1,5 +1,37 @@
 import { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import { useSound } from '../theme';
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playCoinSound() {
+  try {
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    // Three quick metallic pings — stable pitch, fast decay, no frequency sweep
+    [
+      { freq: 2400, delay: 0    },
+      { freq: 2800, delay: 0.09 },
+      { freq: 2200, delay: 0.18 },
+    ].forEach(({ freq, delay }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'triangle'; // triangle adds metallic overtones vs pure sine
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+      gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + delay + 0.002); // instant attack
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.07); // fast decay
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.08);
+    });
+  } catch (_) {}
+}
 
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
 const MAX_VISIBLE = 12;
@@ -21,6 +53,7 @@ const PILE = [
 ];
 
 export default function StarJar({ totalStars, onBonusStar }) {
+  const soundEnabled = useSound();
   const [bouncing, setBouncing] = useState(false);
   const prevRef = useRef(totalStars);
 
@@ -34,6 +67,7 @@ export default function StarJar({ totalStars, onBonusStar }) {
   }, [totalStars]);
 
   function handleBonus(e) {
+    if (soundEnabled) playCoinSound();
     const rect = e.currentTarget.getBoundingClientRect();
     confetti({
       particleCount: 65,

@@ -116,7 +116,7 @@ function Hourglass({ progress, alerting, done, ticking }) {
   );
 }
 
-export default function CountdownTimer({ minutes, setMinutes, maxMinutes = 3, running, resetToken }) {
+export default function CountdownTimer({ minutes, setMinutes, maxMinutes = 3, running, resetToken, onStart }) {
   const maxSec = Math.max(MIN_SEC, Math.round(maxMinutes * 60));
   const totalSeconds = snap(Math.round((Number(minutes) || 0) * 60), MIN_SEC, maxSec);
 
@@ -152,6 +152,7 @@ export default function CountdownTimer({ minutes, setMinutes, maxMinutes = 3, ru
     if (!audioCtxRef.current) {
       try { audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {}
     }
+    if (!started) onStart?.();
     setStarted(s => !s);
   }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
+import { useSound } from '../theme';
 
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
 
@@ -95,6 +96,7 @@ function playChime() {
 }
 
 export default function TaskCard({ task, done, onToggle }) {
+  const soundEnabled = useSound();
   const [popping, setPopping] = useState(false);
   const [lit, setLit] = useState(false);
   const [praise, setPraise] = useState(null);
@@ -103,7 +105,6 @@ export default function TaskCard({ task, done, onToggle }) {
     const willComplete = !done;
 
     if (willComplete) {
-      // Small confetti burst right where the star is, plus a chime.
       const rect = e.currentTarget.getBoundingClientRect();
       const x = Math.min((rect.right - 36) / window.innerWidth, 1);
       const y = (rect.top + rect.height / 2) / window.innerHeight;
@@ -116,13 +117,14 @@ export default function TaskCard({ task, done, onToggle }) {
         origin: { x, y },
         colors: CONFETTI_COLORS,
       });
-      playChime();
 
-      // Encouraging praise — shown big and spoken out loud.
-      const phrase = randomPraise();
-      setPraise(phrase);
-      speak(phrase);
-      setTimeout(() => setPraise(null), 1200);
+      if (soundEnabled) {
+        playChime();
+        const phrase = randomPraise();
+        setPraise(phrase);
+        speak(phrase);
+        setTimeout(() => setPraise(null), 1200);
+      }
 
       setLit(true);
       setTimeout(() => setLit(false), 500);

@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import CollapsibleSection from './CollapsibleSection';
 import ProgressBar from './ProgressBar';
-import StarCounter from './StarCounter';
+import StarJar from './StarJar';
 import CountdownTimer from './CountdownTimer';
 import CelebrationScreen from './CelebrationScreen';
 import { useTheme } from '../theme';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
-  sections, completedToday, celebrationCharacter,
-  handleTaskToggle, handleResetToday, onParentPress,
+  timerPaused, sections, completedToday, celebrationCharacter,
+  soundEnabled, setSoundEnabled,
+  handleTaskToggle, handleResetToday, handleBonusStar, onParentPress, onTimerPause, onTimerResume,
 }) {
   const theme = useTheme();
   const visibleSections = sections.filter(s => s.enabled !== false);
@@ -31,7 +32,7 @@ export default function ChildView({
       {showCelebration && (
         <CelebrationScreen
           childName={childName}
-          starsEarned={allTasks.length}
+          starsEarned={totalStars}
           celebrationCharacter={celebrationCharacter}
           onClose={() => setShowCelebration(false)}
         />
@@ -44,21 +45,20 @@ export default function ChildView({
         </h1>
       </div>
 
-      <StarCounter total={totalStars} />
-
       {timerMinutes > 0 && (
         <CountdownTimer
           minutes={timerMinutes}
           setMinutes={setTimerMinutes}
           maxMinutes={timerMaxMinutes}
-          running={!allDone}
+          running={!timerPaused && !allDone}
           resetToken={timerResetToken}
+          onStart={onTimerResume}
         />
       )}
 
       <ProgressBar done={doneCount} total={allTasks.length} />
 
-      {doneCount > 0 && (
+      {(totalStars > 0 || doneCount > 0) && (
         <button
           onClick={handleResetToday}
           className="mt-3 bg-white/80 hover:bg-white active:scale-95 border-2 text-gray-500 font-bold text-sm py-2 px-5 rounded-full shadow transition"
@@ -68,7 +68,7 @@ export default function ChildView({
         </button>
       )}
 
-      <div className="w-full max-w-md mt-4 space-y-4 pb-16">
+      <div className="w-full max-w-md mt-4 space-y-4 pb-4">
         {visibleSections.length === 0 ? (
           <div className="text-center text-gray-500 py-8 text-lg font-bold">
             No tasks today!<br />Ask a parent to add some. 😊
@@ -84,6 +84,26 @@ export default function ChildView({
           ))
         )}
       </div>
+
+      <StarJar totalStars={totalStars} onBonusStar={handleBonusStar} />
+
+      {(doneCount > 0 || totalStars > 0) && (
+        <button
+          onClick={() => { onTimerPause(); setShowCelebration(true); }}
+          className="mb-4 text-white font-black text-xl py-4 px-10 rounded-full shadow-xl active:scale-95 transition"
+          style={{ backgroundColor: theme.primary }}
+        >
+          🎉 All Done!
+        </button>
+      )}
+
+      <button
+        onClick={() => setSoundEnabled(s => !s)}
+        className="fixed bottom-4 left-4 bg-white/80 hover:bg-white border-2 border-gray-200 text-gray-500 hover:text-gray-700 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+        title={soundEnabled ? 'Mute sounds' : 'Unmute sounds'}
+      >
+        {soundEnabled ? '🔊' : '🔇'}
+      </button>
 
       <button
         onClick={onParentPress}
