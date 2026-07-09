@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { DEFAULT_POOL, DEFAULT_TODAY, DEFAULT_SECTIONS } from './data/defaultData';
-import { ThemeContext, SoundContext, THEMES } from './theme';
+import { ThemeContext, SoundContext, DarkModeContext, THEMES } from './theme';
 import ChildView from './components/ChildView';
 import PinEntry from './components/PinEntry';
 import ParentView from './components/ParentView';
@@ -23,6 +23,11 @@ export default function App() {
   const [themeKey, setThemeKey] = useLocalStorage('theme', 'purple');
   const [celebrationCharacter, setCelebrationCharacter] = useLocalStorage('celebrationCharacter', 'trophy');
   const [soundEnabled, setSoundEnabled] = useLocalStorage('soundEnabled', true);
+  const [darkMode, setDarkMode] = useLocalStorage('darkMode', false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, [darkMode]);
 
   const theme = THEMES[themeKey] || THEMES.purple;
 
@@ -73,6 +78,7 @@ export default function App() {
   return (
     <ThemeContext.Provider value={theme}>
     <SoundContext.Provider value={soundEnabled}>
+    <DarkModeContext.Provider value={[darkMode, setDarkMode]}>
       {view === 'pin' && (
         <PinEntry
           correctPin={pin}
@@ -95,6 +101,7 @@ export default function App() {
           onParentPress={() => setView('pin')}
         />
       )}
+    </DarkModeContext.Provider>
     </SoundContext.Provider>
     </ThemeContext.Provider>
   );

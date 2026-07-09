@@ -3,11 +3,11 @@ export default function ProgressBar({ done, total }) {
 
   return (
     <div className="w-full max-w-md mt-3">
-      <div className="flex justify-between text-sm font-bold text-purple-600 mb-1">
+      <div className="flex justify-between text-sm font-bold text-purple-600 dark:text-purple-300 mb-1">
         <span>✨ Progress</span>
         <span>{done} of {total} done!</span>
       </div>
-      <div className="w-full h-5 bg-purple-100 rounded-full overflow-hidden shadow-inner">
+      <div className="w-full h-5 bg-purple-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{

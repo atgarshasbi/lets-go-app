@@ -23,3 +23,6 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const SoundContext = createContext(true);
 export const useSound = () => useContext(SoundContext);
+
+export const DarkModeContext = createContext([false, () => {}]);
+export const useDarkMode = () => useContext(DarkModeContext);

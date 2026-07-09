@@ -17,6 +17,10 @@ body {
   min-height: 100vh;
 }
 
+html.dark body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+}
+
 @keyframes bounceIn {
   0%   { transform: scale(0); opacity: 0; }
   60%  { transform: scale(1.25); opacity: 1; }

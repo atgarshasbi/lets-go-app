@@ -60,7 +60,7 @@ export default function CollapsibleSection({ section, completedToday, onToggleTa
       </button>
 
       {open && (
-        <div className="p-3 space-y-3 bg-white/60">
+        <div className="p-3 space-y-3 bg-white/60 dark:bg-slate-900/60">
           {section.tasks.map(task => (
             <TaskCard
               key={task.id}

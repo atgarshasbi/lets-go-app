@@ -77,16 +77,18 @@ describe('TaskCard — interactions', () => {
 });
 
 describe('TaskCard — sound gating', () => {
-  it('calls speechSynthesis.speak when sound is enabled and task is completed', () => {
+  it('plays android voice (oscillator) when sound is enabled and task is completed', () => {
+    global.__audioCtx()?.createOscillator.mockClear();
     renderCard({ done: false, soundEnabled: true });
     fireEvent.click(screen.getByRole('button'));
-    expect(global.speechSynthesis.speak).toHaveBeenCalled();
+    expect(global.__audioCtx()?.createOscillator).toHaveBeenCalled();
   });
 
-  it('does not call speechSynthesis.speak when sound is disabled', () => {
+  it('does not play android voice when sound is disabled', () => {
+    global.__audioCtx()?.createOscillator.mockClear();
     renderCard({ done: false, soundEnabled: false });
     fireEvent.click(screen.getByRole('button'));
-    expect(global.speechSynthesis.speak).not.toHaveBeenCalled();
+    expect(global.__audioCtx()?.createOscillator).not.toHaveBeenCalled();
   });
 
   it('does not show praise text when sound is disabled', () => {
@@ -95,7 +97,7 @@ describe('TaskCard — sound gating', () => {
     expect(screen.queryByText(/🎉/)).not.toBeInTheDocument();
   });
 
-  it('calls the chime (AudioContext.createOscillator) when sound is enabled', () => {
+  it('calls AudioContext.createOscillator when sound is enabled', () => {
     renderCard({ done: false, soundEnabled: true });
     fireEvent.click(screen.getByRole('button'));
     expect(global.__audioCtx()?.createOscillator).toHaveBeenCalled();
@@ -106,5 +108,12 @@ describe('TaskCard — sound gating', () => {
     renderCard({ done: false, soundEnabled: false });
     fireEvent.click(screen.getByRole('button'));
     expect(global.__audioCtx()?.createOscillator).not.toHaveBeenCalled();
+  });
+
+  it('calls createBiquadFilter for formant synthesis when sound is enabled', () => {
+    global.__audioCtx()?.createBiquadFilter.mockClear();
+    renderCard({ done: false, soundEnabled: true });
+    fireEvent.click(screen.getByRole('button'));
+    expect(global.__audioCtx()?.createBiquadFilter).toHaveBeenCalled();
   });
 });

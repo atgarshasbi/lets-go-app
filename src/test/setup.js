@@ -17,7 +17,7 @@ const makeOscillator = () => ({
   start: vi.fn(),
   stop: vi.fn(),
   type: 'sine',
-  frequency: { value: 440, setValueAtTime: vi.fn() },
+  frequency: { value: 440, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() },
 });
 
 const makeBufferSource = () => ({
@@ -30,7 +30,7 @@ const makeBufferSource = () => ({
 const makeFilter = () => ({
   connect: vi.fn(),
   type: 'lowpass',
-  frequency: { value: 350 },
+  frequency: { value: 350, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() },
   Q: { value: 1 },
 });
 

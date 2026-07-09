@@ -4,8 +4,7 @@ import { useSound } from '../theme';
 
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
 
-// Short, high-energy phrases a 3-year-old will love to hear. Each is both
-// shown on screen and spoken out loud.
+// Short, high-energy phrases shown on screen when a task is completed.
 const PRAISES = [
   'Yaaay!', 'Woohoo!', 'You did it!', 'Great job!', 'Amazing!',
   'Super star!', 'High five!', 'Hooray!', 'Way to go!', 'Fantastic!',
@@ -16,58 +15,12 @@ function randomPraise() {
   return PRAISES[Math.floor(Math.random() * PRAISES.length)];
 }
 
-// Pick the warmest, most natural-sounding English voice the device offers,
-// instead of the robotic default. Prefers modern "natural" voices, then
-// well-known friendly female voices.
-let cachedVoice = null;
-function pickVoice() {
-  const synth = window.speechSynthesis;
-  if (!synth) return null;
-  const voices = synth.getVoices();
-  if (!voices.length) return null;
-  const en = voices.filter(v => /^en/i.test(v.lang));
-  const pool = en.length ? en : voices;
-  const prefer = [
-    /natural/i, /aria/i, /jenny/i, /ava/i, /libby/i, /sonia/i, // modern MS natural voices
-    /google us english/i, /samantha/i, /zira/i, /female/i,
-  ];
-  for (const re of prefer) {
-    const match = pool.find(v => re.test(v.name));
-    if (match) return match;
-  }
-  return pool[0];
-}
-
-if (typeof window !== 'undefined' && window.speechSynthesis) {
-  // Voices load asynchronously in some browsers.
-  cachedVoice = pickVoice();
-  window.speechSynthesis.onvoiceschanged = () => { cachedVoice = pickVoice(); };
-}
-
-// Speak the praise with lots of energy — a bright, bouncy delivery.
-function speak(text) {
-  try {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    synth.cancel(); // avoid overlap if taps come fast
-    if (!cachedVoice) cachedVoice = pickVoice();
-    const u = new SpeechSynthesisUtterance(text);
-    if (cachedVoice) u.voice = cachedVoice;
-    u.lang = (cachedVoice && cachedVoice.lang) || 'en-US';
-    u.rate = 1.1;   // a touch quick = excited
-    u.pitch = 1.6;  // bright and cheerful
-    u.volume = 1;
-    synth.speak(u);
-  } catch {
-    // ignore — voice is a nice-to-have
-  }
-}
-
-// A short, cheerful ascending chime synthesized with the Web Audio API,
-// so there's no audio file to ship and it works offline. Reuses one
-// AudioContext across taps.
+// Android voice: sawtooth oscillator (buzzing "vocal cords") routed through two
+// bandpass filters (formants F1 + F2). Amplitude is pulsed once per estimated
+// syllable, and the formant frequencies cycle through vowel-like positions.
+// Result: a fully synthesized electronic android voice — no human speech involved.
 let audioCtx = null;
-function playChime() {
+function playAndroidVoice(text) {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
@@ -75,24 +28,56 @@ function playChime() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const ctx = audioCtx;
     const now = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-      const t = now + i * 0.07;
-      gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.3);
-    });
-  } catch {
-    // ignore — sound is a nice-to-have
-  }
+
+    // Estimate syllable count from vowel clusters
+    const syls = Math.max(2, (text.match(/[aeiouy]+/gi) || []).length);
+    const sylDur = 0.14;
+    const totalDur = syls * sylDur + 0.12;
+
+    // Sawtooth carrier — the electronic "vocal cord" buzz
+    const carrier = ctx.createOscillator();
+    carrier.type = 'sawtooth';
+    carrier.frequency.setValueAtTime(90, now);
+    carrier.frequency.linearRampToValueAtTime(100, now + totalDur * 0.4);
+    carrier.frequency.linearRampToValueAtTime(85, now + totalDur);
+
+    // F1: low formant (jaw opening) 400–700 Hz
+    const f1 = ctx.createBiquadFilter();
+    f1.type = 'bandpass';
+    f1.Q.value = 10;
+
+    // F2: high formant (tongue position) 900–2200 Hz
+    const f2 = ctx.createBiquadFilter();
+    f2.type = 'bandpass';
+    f2.Q.value = 7;
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, now);
+
+    carrier.connect(f1);
+    carrier.connect(f2);
+    f1.connect(masterGain);
+    f2.connect(masterGain);
+    masterGain.connect(ctx.destination);
+
+    // Cycle vowel-like formant pairs across syllables
+    const F1 = [500, 700, 400, 600, 450, 650];
+    const F2 = [1500, 1000, 2200, 1300, 1900, 1100];
+
+    for (let i = 0; i < syls; i++) {
+      const t = now + i * sylDur;
+      masterGain.gain.setValueAtTime(0, t);
+      masterGain.gain.linearRampToValueAtTime(0.4, t + 0.006);
+      masterGain.gain.setValueAtTime(0.38, t + 0.09);
+      masterGain.gain.linearRampToValueAtTime(0, t + sylDur);
+      f1.frequency.setValueAtTime(F1[i % F1.length], t);
+      f2.frequency.setValueAtTime(F2[i % F2.length], t);
+    }
+
+    masterGain.gain.setValueAtTime(0, now + totalDur);
+    carrier.start(now);
+    carrier.stop(now + totalDur + 0.05);
+  } catch { /* ignore */ }
 }
 
 export default function TaskCard({ task, done, onToggle }) {
@@ -119,10 +104,9 @@ export default function TaskCard({ task, done, onToggle }) {
       });
 
       if (soundEnabled) {
-        playChime();
         const phrase = randomPraise();
         setPraise(phrase);
-        speak(phrase);
+        playAndroidVoice(phrase);
         setTimeout(() => setPraise(null), 1200);
       }
 
@@ -143,8 +127,8 @@ export default function TaskCard({ task, done, onToggle }) {
         'transition-all duration-300 select-none active:scale-95 cursor-pointer',
         popping ? 'animate-check-pop' : '',
         done
-          ? 'bg-green-400 border-4 border-green-500'
-          : 'bg-white border-4 border-purple-200 hover:border-purple-400 hover:shadow-xl',
+          ? 'bg-green-400 dark:bg-green-800 border-4 border-green-500 dark:border-green-700'
+          : 'bg-white dark:bg-slate-800 border-4 border-purple-200 dark:border-violet-900 hover:border-purple-400 dark:hover:border-violet-700 hover:shadow-xl',
       ].join(' ')}
     >
       {praise && (
@@ -154,7 +138,7 @@ export default function TaskCard({ task, done, onToggle }) {
       )}
 
       <span className="text-5xl leading-none">{task.emoji}</span>
-      <span className={`flex-1 text-2xl font-black ${done ? 'text-white line-through' : 'text-gray-700'}`}>
+      <span className={`flex-1 text-2xl font-black ${done ? 'text-white line-through' : 'text-gray-700 dark:text-slate-100'}`}>
         {task.label}
       </span>
       <span

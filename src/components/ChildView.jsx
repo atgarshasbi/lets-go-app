@@ -4,7 +4,7 @@ import ProgressBar from './ProgressBar';
 import StarJar from './StarJar';
 import CreatureTimer from './CreatureTimer';
 import CelebrationScreen from './CelebrationScreen';
-import { useTheme } from '../theme';
+import { useTheme, useDarkMode } from '../theme';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
@@ -13,6 +13,7 @@ export default function ChildView({
   handleTaskToggle, handleResetToday, handleBonusStar, onParentPress, onTimerPause, onTimerResume,
 }) {
   const theme = useTheme();
+  const [darkMode, setDarkMode] = useDarkMode();
   const visibleSections = sections.filter(s => s.enabled !== false);
   const allTasks = visibleSections.flatMap(s => s.tasks);
   const doneCount = allTasks.filter(t => completedToday.includes(t.id)).length;
@@ -70,7 +71,7 @@ export default function ChildView({
 
       <div className="w-full max-w-md mt-4 space-y-4 pb-4">
         {visibleSections.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 text-lg font-bold">
+          <div className="text-center text-gray-500 dark:text-slate-400 py-8 text-lg font-bold">
             No tasks today!<br />Ask a parent to add some. 😊
           </div>
         ) : (
@@ -99,15 +100,23 @@ export default function ChildView({
 
       <button
         onClick={() => setSoundEnabled(s => !s)}
-        className="fixed bottom-4 left-4 bg-white/80 hover:bg-white border-2 border-gray-200 text-gray-500 hover:text-gray-700 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+        className="fixed bottom-4 left-4 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
         title={soundEnabled ? 'Mute sounds' : 'Unmute sounds'}
       >
         {soundEnabled ? '🔊' : '🔇'}
       </button>
 
       <button
+        onClick={() => setDarkMode(d => !d)}
+        className="fixed bottom-4 left-20 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+        title={darkMode ? 'Day mode' : 'Night mode'}
+      >
+        {darkMode ? '☀️' : '🌙'}
+      </button>
+
+      <button
         onClick={onParentPress}
-        className="fixed bottom-4 right-4 bg-white/80 hover:bg-white border-2 border-gray-200 text-gray-500 hover:text-gray-700 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+        className="fixed bottom-4 right-4 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
       >
         🔒 Parent
       </button>
