@@ -78,3 +78,57 @@ body {
   100% { transform: translateY(0);     opacity: 1; }
 }
 .star-drop { animation: starDrop 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
+
+/* ── Creature timer animations ── */
+@keyframes creatureSleep {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%       { transform: translateY(4px) rotate(-4deg); }
+}
+.creature-sleep { animation: creatureSleep 2.4s ease-in-out infinite; display: inline-block; }
+
+@keyframes creatureYawn {
+  0%, 80%, 100% { transform: rotate(0deg); }
+  40%           { transform: rotate(-6deg) scale(1.05); }
+}
+.creature-yawn { animation: creatureYawn 2s ease-in-out infinite; display: inline-block; }
+
+@keyframes creatureSit {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+.creature-sit { animation: creatureSit 1.4s ease-in-out infinite; display: inline-block; }
+
+@keyframes creatureHappy {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  30%      { transform: scale(1.1) rotate(-5deg); }
+  60%      { transform: scale(1.1) rotate(5deg); }
+}
+.creature-happy { animation: creatureHappy 0.9s ease-in-out infinite; display: inline-block; }
+
+@keyframes creatureBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40%      { transform: translateY(-16px) scale(1.1); }
+  70%      { transform: translateY(-6px) scale(1.05); }
+}
+.creature-bounce { animation: creatureBounce 0.55s cubic-bezier(0.22,0.61,0.36,1) infinite; display: inline-block; }
+
+@keyframes creatureCelebrate {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25%      { transform: scale(1.15) rotate(-10deg); }
+  75%      { transform: scale(1.15) rotate(10deg); }
+}
+.creature-celebrate { animation: creatureCelebrate 0.5s ease-in-out infinite; display: inline-block; }
+
+/* Floating Zzz — each span uses a CSS var --d for staggered delay */
+@keyframes zzzFloat {
+  0%   { transform: translate(0, 0);      opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(12px, -36px); opacity: 0; }
+}
+.zzz-float {
+  position: absolute;
+  animation: zzzFloat 1.8s ease-in infinite;
+  animation-delay: var(--d, 0s);
+  font-weight: 900;
+  font-family: system-ui, sans-serif;
+}

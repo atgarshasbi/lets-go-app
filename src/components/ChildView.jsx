@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import CollapsibleSection from './CollapsibleSection';
 import ProgressBar from './ProgressBar';
 import StarJar from './StarJar';
-import CountdownTimer from './CountdownTimer';
+import CreatureTimer from './CreatureTimer';
 import CelebrationScreen from './CelebrationScreen';
 import { useTheme } from '../theme';
 
@@ -46,13 +46,13 @@ export default function ChildView({
       </div>
 
       {timerMinutes > 0 && (
-        <CountdownTimer
+        <CreatureTimer
           minutes={timerMinutes}
           setMinutes={setTimerMinutes}
           maxMinutes={timerMaxMinutes}
           running={!timerPaused && !allDone}
           resetToken={timerResetToken}
-          onStart={onTimerResume}
+          completionPct={allTasks.length > 0 ? doneCount / allTasks.length : 0}
         />
       )}
 

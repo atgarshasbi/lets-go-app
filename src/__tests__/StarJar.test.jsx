@@ -29,9 +29,10 @@ describe('StarJar — rendering', () => {
     expect(screen.getByText('Bonus!')).toBeInTheDocument();
   });
 
-  it('shows "+N more" overflow text when stars exceed 12', () => {
-    renderJar({ totalStars: 15 });
-    expect(screen.getByText('+3 more')).toBeInTheDocument();
+  it('shows all 20 pile stars when count reaches MAX_VISIBLE', () => {
+    renderJar({ totalStars: 20 });
+    const stars = document.querySelectorAll('span[style*="position: absolute"]');
+    expect(stars.length).toBe(20);
   });
 });
 

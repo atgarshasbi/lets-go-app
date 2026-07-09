@@ -7,8 +7,7 @@ export default function Settings({
   themeKey, setThemeKey, celebrationCharacter, setCelebrationCharacter,
 }) {
   const [name, setName] = useState(childName);
-  const [timer, setTimer] = useState(String(timerMinutes));
-  const [maxTimer, setMaxTimer] = useState(String(timerMaxMinutes));
+  const [showTimer, setShowTimer] = useState(timerMinutes > 0);
   const [generalSaved, setGeneralSaved] = useState(false);
 
   const [currentPin, setCurrentPin] = useState('');
@@ -20,12 +19,8 @@ export default function Settings({
 
   function saveGeneral() {
     if (name.trim()) setChildName(name.trim());
-    let max = parseInt(maxTimer, 10);
-    if (isNaN(max) || max < 1) max = 1;
-    if (max > 30) max = 30;
-    setTimerMaxMinutes(max);
-    const mins = parseInt(timer, 10);
-    if (!isNaN(mins) && mins >= 0) setTimerMinutes(Math.min(mins, max));
+    if (!showTimer) setTimerMinutes(0);
+    else if (timerMinutes === 0) setTimerMinutes(5); // restore a sensible default
     setGeneralSaved(true);
     setTimeout(() => setGeneralSaved(false), 2000);
   }
@@ -59,27 +54,18 @@ export default function Settings({
           onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
         />
 
-        <label className="block text-sm font-bold text-gray-600 mb-1">
-          Start time (minutes — 0 to hide timer)
-        </label>
-        <input
-          type="number" min="0" max="30" value={timer}
-          onChange={e => setTimer(e.target.value)}
-          className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold mb-4 transition"
-          onFocus={e => (e.target.style.borderColor = theme.primary)}
-          onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
-        />
-
-        <label className="block text-sm font-bold text-gray-600 mb-1">
-          Maximum time (minutes — how far the slider can go)
-        </label>
-        <input
-          type="number" min="1" max="30" value={maxTimer}
-          onChange={e => setMaxTimer(e.target.value)}
-          className="w-full border-2 border-gray-200 focus:outline-none rounded-xl px-4 py-2 font-bold mb-4 transition"
-          onFocus={e => (e.target.style.borderColor = theme.primary)}
-          onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
-        />
+        <div className="flex items-center justify-between mb-4 py-2">
+          <span className="text-sm font-bold text-gray-600">Show countdown timer</span>
+          <button
+            onClick={() => setShowTimer(s => !s)}
+            className="relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0"
+            style={{ backgroundColor: showTimer ? theme.primary : '#d1d5db' }}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${showTimer ? 'translate-x-5' : 'translate-x-0'}`}
+            />
+          </button>
+        </div>
 
         <button
           onClick={saveGeneral}

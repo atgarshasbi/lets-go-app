@@ -34,22 +34,35 @@ function playCoinSound() {
 }
 
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
-const MAX_VISIBLE = 12;
+const MAX_VISIBLE = 20;
 
-// Fixed pile positions — stars tumble in from the bottom up, slightly offset and rotated
+// 20 pile positions filling the full jar body (y ~30–135), bottom-up order
 const PILE = [
-  { left:  8, top: 122, rot: -8  },
-  { left: 30, top: 126, rot:  5  },
-  { left: 52, top: 120, rot: -3  },
-  { left: 70, top: 124, rot: 10  },
-  { left: 15, top: 100, rot:  6  },
-  { left: 38, top: 104, rot: -12 },
-  { left: 58, top:  98, rot:  4  },
-  { left: 74, top: 102, rot: -7  },
-  { left: 22, top:  78, rot: -5  },
-  { left: 44, top:  82, rot:  9  },
-  { left: 63, top:  76, rot: -11 },
-  { left: 78, top:  80, rot:  3  },
+  // row 1 — bottom
+  { left: 10, top: 128, rot: -8  },
+  { left: 32, top: 132, rot:  5  },
+  { left: 54, top: 126, rot: -3  },
+  { left: 74, top: 130, rot: 10  },
+  // row 2
+  { left: 18, top: 108, rot:  6  },
+  { left: 40, top: 112, rot: -12 },
+  { left: 62, top: 106, rot:  4  },
+  { left: 80, top: 110, rot: -7  },
+  // row 3
+  { left: 10, top:  88, rot: -5  },
+  { left: 32, top:  92, rot:  9  },
+  { left: 55, top:  86, rot: -11 },
+  { left: 76, top:  90, rot:  3  },
+  // row 4
+  { left: 18, top:  68, rot:  7  },
+  { left: 40, top:  72, rot: -6  },
+  { left: 62, top:  66, rot: 12  },
+  { left: 78, top:  70, rot: -4  },
+  // row 5 — top
+  { left: 12, top:  48, rot: -9  },
+  { left: 34, top:  52, rot:  4  },
+  { left: 56, top:  46, rot: -7  },
+  { left: 76, top:  50, rot:  8  },
 ];
 
 export default function StarJar({ totalStars, onBonusStar }) {
@@ -82,8 +95,7 @@ export default function StarJar({ totalStars, onBonusStar }) {
     onBonusStar();
   }
 
-  const visible  = Math.min(totalStars, MAX_VISIBLE);
-  const overflow = totalStars > MAX_VISIBLE ? totalStars - MAX_VISIBLE : 0;
+  const visible = Math.min(totalStars, MAX_VISIBLE);
 
   return (
     <div className="flex items-end justify-center gap-4 py-4 pb-20">
@@ -102,13 +114,6 @@ export default function StarJar({ totalStars, onBonusStar }) {
             fill="rgba(219,234,254,0.45)" stroke="#93c5fd" strokeWidth="3" />
           {/* Glass shine */}
           <rect x="19" y="32" width="9" height="52" rx="4" fill="rgba(255,255,255,0.38)" />
-          {/* Overflow text */}
-          {overflow > 0 && (
-            <text x="55" y="46" textAnchor="middle" fontSize="13"
-              fontWeight="bold" fill="#7c3aed" fontFamily="sans-serif">
-              +{overflow} more
-            </text>
-          )}
         </svg>
 
         {/* Star emojis — absolutely placed so they sit inside the jar */}
