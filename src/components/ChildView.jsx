@@ -35,7 +35,7 @@ export default function ChildView({
           childName={childName}
           starsEarned={totalStars}
           celebrationCharacter={celebrationCharacter}
-          onClose={() => setShowCelebration(false)}
+          onClose={() => { setShowCelebration(false); onTimerResume(); }}
         />
       )}
 
@@ -51,9 +51,10 @@ export default function ChildView({
           minutes={timerMinutes}
           setMinutes={setTimerMinutes}
           maxMinutes={timerMaxMinutes}
-          running={!timerPaused && !allDone}
+          running={!timerPaused && !showCelebration}
           resetToken={timerResetToken}
           completionPct={allTasks.length > 0 ? doneCount / allTasks.length : 0}
+          soundEnabled={soundEnabled}
         />
       )}
 

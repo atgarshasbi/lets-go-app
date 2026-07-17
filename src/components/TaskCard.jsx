@@ -4,7 +4,6 @@ import { useSound } from '../theme';
 
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6'];
 
-// Short, high-energy phrases shown on screen when a task is completed.
 const PRAISES = [
   'Yaaay!', 'Woohoo!', 'You did it!', 'Great job!', 'Amazing!',
   'Super star!', 'High five!', 'Hooray!', 'Way to go!', 'Fantastic!',
@@ -15,12 +14,8 @@ function randomPraise() {
   return PRAISES[Math.floor(Math.random() * PRAISES.length)];
 }
 
-// Android voice: sawtooth oscillator (buzzing "vocal cords") routed through two
-// bandpass filters (formants F1 + F2). Amplitude is pulsed once per estimated
-// syllable, and the formant frequencies cycle through vowel-like positions.
-// Result: a fully synthesized electronic android voice — no human speech involved.
 let audioCtx = null;
-function playAndroidVoice(text) {
+function playRobotBlip() {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
@@ -28,55 +23,23 @@ function playAndroidVoice(text) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const ctx = audioCtx;
     const now = ctx.currentTime;
-
-    // Estimate syllable count from vowel clusters
-    const syls = Math.max(2, (text.match(/[aeiouy]+/gi) || []).length);
-    const sylDur = 0.14;
-    const totalDur = syls * sylDur + 0.12;
-
-    // Sawtooth carrier — the electronic "vocal cord" buzz
-    const carrier = ctx.createOscillator();
-    carrier.type = 'sawtooth';
-    carrier.frequency.setValueAtTime(90, now);
-    carrier.frequency.linearRampToValueAtTime(100, now + totalDur * 0.4);
-    carrier.frequency.linearRampToValueAtTime(85, now + totalDur);
-
-    // F1: low formant (jaw opening) 400–700 Hz
-    const f1 = ctx.createBiquadFilter();
-    f1.type = 'bandpass';
-    f1.Q.value = 10;
-
-    // F2: high formant (tongue position) 900–2200 Hz
-    const f2 = ctx.createBiquadFilter();
-    f2.type = 'bandpass';
-    f2.Q.value = 7;
-
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0, now);
-
-    carrier.connect(f1);
-    carrier.connect(f2);
-    f1.connect(masterGain);
-    f2.connect(masterGain);
-    masterGain.connect(ctx.destination);
-
-    // Cycle vowel-like formant pairs across syllables
-    const F1 = [500, 700, 400, 600, 450, 650];
-    const F2 = [1500, 1000, 2200, 1300, 1900, 1100];
-
-    for (let i = 0; i < syls; i++) {
-      const t = now + i * sylDur;
-      masterGain.gain.setValueAtTime(0, t);
-      masterGain.gain.linearRampToValueAtTime(0.4, t + 0.006);
-      masterGain.gain.setValueAtTime(0.38, t + 0.09);
-      masterGain.gain.linearRampToValueAtTime(0, t + sylDur);
-      f1.frequency.setValueAtTime(F1[i % F1.length], t);
-      f2.frequency.setValueAtTime(F2[i % F2.length], t);
-    }
-
-    masterGain.gain.setValueAtTime(0, now + totalDur);
-    carrier.start(now);
-    carrier.stop(now + totalDur + 0.05);
+    [
+      { start: 600,  end: 1200, t: 0    },
+      { start: 1400, end: 700,  t: 0.11 },
+      { start: 800,  end: 1600, t: 0.22 },
+    ].forEach(({ start, end, t }) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(start, now + t);
+      osc.frequency.exponentialRampToValueAtTime(end, now + t + 0.09);
+      gain.gain.setValueAtTime(0.13, now + t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + t);
+      osc.stop(now + t + 0.11);
+    });
   } catch { /* ignore */ }
 }
 
@@ -104,9 +67,9 @@ export default function TaskCard({ task, done, onToggle }) {
       });
 
       if (soundEnabled) {
+        playRobotBlip();
         const phrase = randomPraise();
         setPraise(phrase);
-        playAndroidVoice(phrase);
         setTimeout(() => setPraise(null), 1200);
       }
 

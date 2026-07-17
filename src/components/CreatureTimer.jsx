@@ -41,32 +41,31 @@ function playBeep(ctx, freq = 880) {
 }
 
 // Stadium air horn: a held sawtooth chord that blasts for ~2s then fades out.
-function playStadiumHorn(ctx) {
+// Classic TV game-show buzzer: harsh sawtooth with a short downward pitch drop.
+function playBuzzer(ctx) {
   if (!ctx) return;
   try {
     if (ctx.state === 'suspended') ctx.resume();
     const now = ctx.currentTime;
-    // Root + fifth + octave gives a full, horn-like chord
-    [233, 349, 466].forEach((freq, i) => {
-      const vol = [0.42, 0.22, 0.18][i];
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(vol, now + 0.07); // fast attack
-      gain.gain.setValueAtTime(vol, now + 2.0);           // hold
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 3.8); // slow fade
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 3.9);
-    });
+    const dur = 0.55;
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(290, now);
+    osc.frequency.exponentialRampToValueAtTime(175, now + dur);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.45, now + 0.005);
+    gain.gain.setValueAtTime(0.45, now + dur - 0.05);
+    gain.gain.linearRampToValueAtTime(0, now + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur + 0.02);
   } catch (_) {}
 }
 
 export default function CreatureTimer({
-  minutes, setMinutes, maxMinutes = 30, running, resetToken, completionPct,
+  minutes, setMinutes, maxMinutes = 30, running, resetToken, completionPct, soundEnabled = true,
 }) {
   const totalSec = Math.max(10, Math.round((Number(minutes) || 0) * 60));
 
@@ -91,13 +90,13 @@ export default function CreatureTimer({
       setRemaining(prev => {
         const next = prev <= 1 ? 0 : prev - 1;
         const ctx = audioCtxRef.current;
-        if (next === 0 && prev > 0) playStadiumHorn(ctx);
-        else if (next > 0 && next <= 20) playBeep(ctx, next <= 10 ? 1046 : 880);
+        if (next === 0 && prev > 0) { if (soundEnabled) playBuzzer(ctx); }
+        else if (next > 0 && next <= 20 && soundEnabled) playBeep(ctx, next <= 10 ? 1046 : 880);
         return next;
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [started, running]);
+  }, [started, running, soundEnabled]);
 
   function handleStart() {
     // Init AudioContext on first user gesture so sounds work

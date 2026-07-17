@@ -77,14 +77,14 @@ describe('TaskCard — interactions', () => {
 });
 
 describe('TaskCard — sound gating', () => {
-  it('plays android voice (oscillator) when sound is enabled and task is completed', () => {
+  it('plays robot blip when sound is enabled and task is completed', () => {
     global.__audioCtx()?.createOscillator.mockClear();
     renderCard({ done: false, soundEnabled: true });
     fireEvent.click(screen.getByRole('button'));
     expect(global.__audioCtx()?.createOscillator).toHaveBeenCalled();
   });
 
-  it('does not play android voice when sound is disabled', () => {
+  it('does not play robot blip when sound is disabled', () => {
     global.__audioCtx()?.createOscillator.mockClear();
     renderCard({ done: false, soundEnabled: false });
     fireEvent.click(screen.getByRole('button'));
@@ -98,6 +98,7 @@ describe('TaskCard — sound gating', () => {
   });
 
   it('calls AudioContext.createOscillator when sound is enabled', () => {
+    global.__audioCtx()?.createOscillator.mockClear();
     renderCard({ done: false, soundEnabled: true });
     fireEvent.click(screen.getByRole('button'));
     expect(global.__audioCtx()?.createOscillator).toHaveBeenCalled();
@@ -108,12 +109,5 @@ describe('TaskCard — sound gating', () => {
     renderCard({ done: false, soundEnabled: false });
     fireEvent.click(screen.getByRole('button'));
     expect(global.__audioCtx()?.createOscillator).not.toHaveBeenCalled();
-  });
-
-  it('calls createBiquadFilter for formant synthesis when sound is enabled', () => {
-    global.__audioCtx()?.createBiquadFilter.mockClear();
-    renderCard({ done: false, soundEnabled: true });
-    fireEvent.click(screen.getByRole('button'));
-    expect(global.__audioCtx()?.createBiquadFilter).toHaveBeenCalled();
   });
 });
