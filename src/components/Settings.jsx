@@ -159,6 +159,13 @@ export default function Settings({
           Change PIN
         </button>
       </div>
+
+      {/* Legal */}
+      <div className="text-center text-xs text-gray-400 font-bold py-2 space-x-3">
+        <a href="/privacy.html" target="_blank" rel="noreferrer" className="underline">Privacy Policy</a>
+        <span>&middot;</span>
+        <a href="/terms.html" target="_blank" rel="noreferrer" className="underline">Terms of Service</a>
+      </div>
     </div>
   );
 }

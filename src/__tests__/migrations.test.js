@@ -63,4 +63,27 @@ describe('runMigrations', () => {
     expect(() => runMigrations()).not.toThrow();
     expect(localStorage.getItem('dataVersion')).toBe('1');
   });
+
+  it('backfills hasVisited for users with existing data (skip the new landing splash)', () => {
+    localStorage.setItem('childName', 'Milo');
+
+    runMigrations();
+
+    expect(localStorage.getItem('hasVisited')).toBe('true');
+  });
+
+  it('leaves hasVisited unset for a brand new user (so they see the landing splash)', () => {
+    runMigrations();
+
+    expect(localStorage.getItem('hasVisited')).toBeNull();
+  });
+
+  it('does not override an explicit hasVisited value already set', () => {
+    localStorage.setItem('hasVisited', 'false');
+    localStorage.setItem('childName', 'Milo');
+
+    runMigrations();
+
+    expect(localStorage.getItem('hasVisited')).toBe('false');
+  });
 });

@@ -5,12 +5,14 @@ import { ThemeContext, SoundContext, DarkModeContext, THEMES } from './theme';
 import ChildView from './components/ChildView';
 import PinEntry from './components/PinEntry';
 import ParentView from './components/ParentView';
+import LandingSplash from './components/LandingSplash';
 
 export default function App() {
   const [view, setView] = useState('child');
   const [timerResetToken, setTimerResetToken] = useState(0);
   const [timerPaused, setTimerPaused] = useState(false);
 
+  const [hasVisited, setHasVisited] = useLocalStorage('hasVisited', false);
   const [childName, setChildName] = useLocalStorage('childName', 'Superstar');
   const [pin, setPin] = useLocalStorage('pin', '1234');
   const [totalStars, setTotalStars] = useLocalStorage('totalStars', 0);
@@ -79,7 +81,11 @@ export default function App() {
     <ThemeContext.Provider value={theme}>
     <SoundContext.Provider value={soundEnabled}>
     <DarkModeContext.Provider value={[darkMode, setDarkMode]}>
-      {view === 'pin' && (
+      {!hasVisited && (
+        <LandingSplash onStart={() => setHasVisited(true)} />
+      )}
+
+      {hasVisited && view === 'pin' && (
         <PinEntry
           correctPin={pin}
           onSuccess={() => setView('parent')}
@@ -87,14 +93,14 @@ export default function App() {
         />
       )}
 
-      {view === 'parent' && (
+      {hasVisited && view === 'parent' && (
         <ParentView
           {...sharedState}
           onBack={() => setView('child')}
         />
       )}
 
-      {view === 'child' && (
+      {hasVisited && view === 'child' && (
         <ChildView
           {...sharedState}
           timerResetToken={timerResetToken}
