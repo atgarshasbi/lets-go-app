@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import InstallBanner from '../components/InstallBanner';
 
@@ -46,5 +46,20 @@ describe('InstallBanner', () => {
     const { container } = render(<InstallBanner />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('shows the button again if beforeinstallprompt fires after being marked installed (e.g. after an uninstall)', () => {
+    localStorage.setItem('appInstalled', 'true');
+    setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+
+    render(<InstallBanner />);
+    expect(screen.queryByRole('button', { name: /install app/i })).not.toBeInTheDocument();
+
+    act(() => {
+      window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }));
+    });
+
+    expect(screen.getByRole('button', { name: /install app/i })).toBeInTheDocument();
+    expect(localStorage.getItem('appInstalled')).toBeNull();
   });
 });

@@ -21,6 +21,13 @@ export function useInstallPrompt() {
     function handleBeforeInstallPrompt(e) {
       e.preventDefault();
       setDeferredPrompt(e);
+      // Chrome only fires this when it currently considers the site NOT installed,
+      // so it's authoritative proof any earlier "installed" flag (e.g. after an
+      // uninstall) is stale.
+      try {
+        localStorage.removeItem('appInstalled');
+      } catch {}
+      setIsInstalled(false);
     }
     function handleAppInstalled() {
       try {
