@@ -10,6 +10,7 @@ function setUserAgent(ua) {
 describe('InstallBanner', () => {
   afterEach(() => {
     setUserAgent(window.navigator.userAgent);
+    localStorage.clear();
   });
 
   it('always shows an Install App button on a non-iOS browser', () => {
@@ -36,5 +37,14 @@ describe('InstallBanner', () => {
     await userEvent.click(screen.getByRole('button', { name: /install app/i }));
 
     expect(screen.getByText(/Install app/i, { selector: 'strong' })).toBeInTheDocument();
+  });
+
+  it('renders nothing once the app has been installed (remembered via appinstalled event)', () => {
+    localStorage.setItem('appInstalled', 'true');
+    setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+
+    const { container } = render(<InstallBanner />);
+
+    expect(container).toBeEmptyDOMElement();
   });
 });

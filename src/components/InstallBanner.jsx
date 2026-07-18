@@ -4,10 +4,10 @@ import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export default function InstallBanner() {
   const theme = useTheme();
-  const { isStandalone, isIOS, canPromptInstall, promptInstall } = useInstallPrompt();
+  const { isIOS, isInstalled, canPromptInstall, promptInstall } = useInstallPrompt();
   const [showHelp, setShowHelp] = useState(false);
 
-  if (isStandalone) return null;
+  if (isInstalled) return null;
 
   function handleClick() {
     if (canPromptInstall) {
