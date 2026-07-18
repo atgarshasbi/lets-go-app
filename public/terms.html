@@ -8,9 +8,11 @@
       body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1f2937; }
       h1 { color: #7c3aed; }
       a { color: #7c3aed; }
+      .back { display: inline-block; margin-bottom: 20px; font-weight: 700; text-decoration: none; }
     </style>
   </head>
   <body>
+    <a class="back" href="/" onclick="if (history.length > 1) { history.back(); return false; }">&larr; Back</a>
     <h1>Terms of Service</h1>
     <p>Last updated: July 2026</p>
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useSessionStorage } from './hooks/useSessionStorage';
 import { DEFAULT_POOL, DEFAULT_TODAY, DEFAULT_SECTIONS } from './data/defaultData';
 import { ThemeContext, SoundContext, DarkModeContext, THEMES } from './theme';
 import ChildView from './components/ChildView';
@@ -8,7 +9,7 @@ import ParentView from './components/ParentView';
 import LandingSplash from './components/LandingSplash';
 
 export default function App() {
-  const [view, setView] = useState('child');
+  const [view, setView] = useSessionStorage('view', 'child');
   const [timerResetToken, setTimerResetToken] = useState(0);
   const [timerPaused, setTimerPaused] = useState(false);
 

@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import RoutinesPanel from './RoutinesPanel';
 import Settings from './Settings';
 import { useTheme } from '../theme';
+import { useSessionStorage } from '../hooks/useSessionStorage';
 
 export default function ParentView({
   childName, setChildName,
@@ -14,7 +14,7 @@ export default function ParentView({
   onBack,
 }) {
   const theme = useTheme();
-  const [tab, setTab] = useState('routines');
+  const [tab, setTab] = useSessionStorage('parentTab', 'routines');
 
   return (
     <div className="min-h-screen bg-gray-50">

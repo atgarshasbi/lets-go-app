@@ -4,6 +4,7 @@ import ProgressBar from './ProgressBar';
 import StarJar from './StarJar';
 import CreatureTimer from './CreatureTimer';
 import CelebrationScreen from './CelebrationScreen';
+import InstallBanner from './InstallBanner';
 import { useTheme, useDarkMode } from '../theme';
 
 export default function ChildView({
@@ -38,6 +39,8 @@ export default function ChildView({
           onClose={() => { setShowCelebration(false); onTimerResume(); }}
         />
       )}
+
+      <InstallBanner />
 
       <div className="text-center mb-3">
         <div className="text-5xl mb-1">🌟</div>
