@@ -37,3 +37,5 @@ jobs:
           app-name: lets-go-license-api
           package: ./api
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          sku: flexconsumption
+          remote-build: true
