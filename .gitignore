@@ -12,10 +12,12 @@ dist
 dist-ssr
 coverage
 *.local
+local.settings.json
 
 # Local dev server logs
 dev-out.txt
 dev-err.txt
+notes.txt
 
 # Editor directories and files
 .vscode/*

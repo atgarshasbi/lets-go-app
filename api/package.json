@@ -1,0 +1,16 @@
+{
+  "name": "lets-go-license-api",
+  "version": "1.0.0",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.1",
+    "@azure/cosmos": "^4.1.1"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.6"
+  }
+}
