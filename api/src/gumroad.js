@@ -1,6 +1,6 @@
 async function verifyGumroadLicense(licenseKey) {
   const params = new URLSearchParams({
-    product_permalink: process.env.GUMROAD_PRODUCT_PERMALINK,
+    product_id: process.env.GUMROAD_PRODUCT_ID,
     license_key: licenseKey,
     increment_uses_count: 'false',
   });

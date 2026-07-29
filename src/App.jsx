@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useSessionStorage } from './hooks/useSessionStorage';
+import { useLicense } from './hooks/useLicense';
 import { DEFAULT_POOL, DEFAULT_TODAY, DEFAULT_SECTIONS } from './data/defaultData';
 import { ThemeContext, SoundContext, DarkModeContext, THEMES } from './theme';
 import ChildView from './components/ChildView';
@@ -27,10 +28,17 @@ export default function App() {
   const [celebrationCharacter, setCelebrationCharacter] = useLocalStorage('celebrationCharacter', 'trophy');
   const [soundEnabled, setSoundEnabled] = useLocalStorage('soundEnabled', true);
   const [darkMode, setDarkMode] = useLocalStorage('darkMode', false);
+  const license = useLicense();
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
+
+  // Revalidate the license each time the Parent Panel is opened — event-driven, not polling.
+  useEffect(() => {
+    if (view === 'parent') license.revalidate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view]);
 
   const theme = THEMES[themeKey] || THEMES.purple;
 
@@ -76,6 +84,10 @@ export default function App() {
     handleTaskToggle,
     handleResetToday,
     handleBonusStar,
+    unlocked: license.unlocked,
+    licenseVerifying: license.verifying,
+    licenseError: license.error,
+    onRedeemLicense: license.redeem,
   };
 
   return (

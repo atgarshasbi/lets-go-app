@@ -1,5 +1,6 @@
 import RoutinesPanel from './RoutinesPanel';
 import Settings from './Settings';
+import LicenseUnlock from './LicenseUnlock';
 import { useTheme } from '../theme';
 import { useSessionStorage } from '../hooks/useSessionStorage';
 
@@ -11,6 +12,7 @@ export default function ParentView({
   themeKey, setThemeKey,
   celebrationCharacter, setCelebrationCharacter,
   sections, setSections,
+  unlocked, licenseVerifying, licenseError, onRedeemLicense,
   onBack,
 }) {
   const theme = useTheme();
@@ -23,32 +25,36 @@ export default function ParentView({
         style={{ backgroundColor: theme.primary }}
       >
         <h1 className="text-lg font-black">🔒 Parent Mode</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setTab('routines')}
-            className="px-3 py-1 rounded-full text-sm font-bold transition"
-            style={tab === 'routines'
-              ? { backgroundColor: 'white', color: theme.primary }
-              : { backgroundColor: 'rgba(255,255,255,0.2)' }
-            }
-          >
-            📋 Routines
-          </button>
-          <button
-            onClick={() => setTab('settings')}
-            className="px-3 py-1 rounded-full text-sm font-bold transition"
-            style={tab === 'settings'
-              ? { backgroundColor: 'white', color: theme.primary }
-              : { backgroundColor: 'rgba(255,255,255,0.2)' }
-            }
-          >
-            ⚙️ Settings
-          </button>
-        </div>
+        {unlocked && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTab('routines')}
+              className="px-3 py-1 rounded-full text-sm font-bold transition"
+              style={tab === 'routines'
+                ? { backgroundColor: 'white', color: theme.primary }
+                : { backgroundColor: 'rgba(255,255,255,0.2)' }
+              }
+            >
+              📋 Routines
+            </button>
+            <button
+              onClick={() => setTab('settings')}
+              className="px-3 py-1 rounded-full text-sm font-bold transition"
+              style={tab === 'settings'
+                ? { backgroundColor: 'white', color: theme.primary }
+                : { backgroundColor: 'rgba(255,255,255,0.2)' }
+              }
+            >
+              ⚙️ Settings
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="p-4 max-w-lg mx-auto pb-8">
-        {tab === 'routines' ? (
+        {!unlocked ? (
+          <LicenseUnlock verifying={licenseVerifying} error={licenseError} onRedeem={onRedeemLicense} />
+        ) : tab === 'routines' ? (
           <RoutinesPanel sections={sections} setSections={setSections} />
         ) : (
           <Settings
