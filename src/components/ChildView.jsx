@@ -58,6 +58,7 @@ export default function ChildView({
           resetToken={timerResetToken}
           completionPct={allTasks.length > 0 ? doneCount / allTasks.length : 0}
           soundEnabled={soundEnabled}
+          onStart={onTimerResume}
         />
       )}
 

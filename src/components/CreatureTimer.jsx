@@ -65,7 +65,7 @@ function playBuzzer(ctx) {
 }
 
 export default function CreatureTimer({
-  minutes, setMinutes, maxMinutes = 30, running, resetToken, completionPct, soundEnabled = true,
+  minutes, setMinutes, maxMinutes = 30, running, resetToken, completionPct, soundEnabled = true, onStart,
 }) {
   const totalSec = Math.max(10, Math.round((Number(minutes) || 0) * 60));
 
@@ -103,12 +103,14 @@ export default function CreatureTimer({
     if (!audioCtxRef.current) {
       try { audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {}
     }
+    if (!started) onStart?.();
     setStarted(s => !s);
   }
 
   function restart() {
     setRemaining(totalSec);
     setStarted(false);
+    onStart?.();
   }
 
   function openEdit() {
