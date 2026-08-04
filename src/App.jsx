@@ -101,6 +101,7 @@ export default function App() {
       {hasVisited && view === 'pin' && (
         <PinEntry
           correctPin={pin}
+          setPin={setPin}
           onSuccess={() => setView('parent')}
           onCancel={() => setView('child')}
         />
