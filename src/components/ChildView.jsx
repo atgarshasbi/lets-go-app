@@ -5,6 +5,7 @@ import StarJar from './StarJar';
 import CreatureTimer from './CreatureTimer';
 import CelebrationScreen from './CelebrationScreen';
 import InstallBanner from './InstallBanner';
+import ContactModal from './ContactModal';
 import { useTheme, useDarkMode } from '../theme';
 
 export default function ChildView({
@@ -20,6 +21,7 @@ export default function ChildView({
   const doneCount = allTasks.filter(t => completedToday.includes(t.id)).length;
   const allDone = allTasks.length > 0 && doneCount >= allTasks.length;
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     if (allDone) setShowCelebration(true);
@@ -39,6 +41,8 @@ export default function ChildView({
           onClose={() => { setShowCelebration(false); onTimerResume(); }}
         />
       )}
+
+      {showContact && <ContactModal onClose={() => setShowContact(false)} />}
 
       <InstallBanner />
 
@@ -119,12 +123,22 @@ export default function ChildView({
         {darkMode ? '☀️' : '🌙'}
       </button>
 
-      <button
-        onClick={onParentPress}
-        className="fixed bottom-4 right-4 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
-      >
-        🔒 Parent
-      </button>
+      <div className="fixed bottom-4 right-4 flex items-center gap-2">
+        <button
+          onClick={() => setShowContact(true)}
+          className="bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+          title="Contact us"
+        >
+          ✉️
+        </button>
+
+        <button
+          onClick={onParentPress}
+          className="bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-300 text-sm font-bold py-2 px-4 rounded-full shadow-lg transition backdrop-blur-sm"
+        >
+          🔒 Parent
+        </button>
+      </div>
     </div>
   );
 }

@@ -165,6 +165,8 @@ export default function Settings({
         <a href="/privacy.html" className="underline">Privacy Policy</a>
         <span>&middot;</span>
         <a href="/terms.html" className="underline">Terms of Service</a>
+        <span>&middot;</span>
+        <a href="/contact.html" className="underline">Contact Us</a>
       </div>
     </div>
   );

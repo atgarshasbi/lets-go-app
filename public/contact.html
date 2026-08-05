@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us — Let's Go!</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1f2937; }
+      h1 { color: #7c3aed; }
+      a { color: #7c3aed; }
+      .back { display: inline-block; margin-bottom: 20px; font-weight: 700; text-decoration: none; }
+      label { display: block; font-weight: 700; margin: 16px 0 4px; font-size: 14px; }
+      input, textarea {
+        width: 100%; box-sizing: border-box; font: inherit; padding: 10px 12px;
+        border: 2px solid #e5e7eb; border-radius: 10px; outline: none;
+      }
+      input:focus, textarea:focus { border-color: #7c3aed; }
+      textarea { resize: vertical; min-height: 120px; }
+      .count { text-align: right; font-size: 12px; color: #9ca3af; margin-top: 2px; }
+      button {
+        margin-top: 20px; width: 100%; padding: 12px; font: inherit; font-weight: 800;
+        color: white; background: #7c3aed; border: none; border-radius: 12px; cursor: pointer;
+      }
+      button:hover { background: #6d28d9; }
+      button:disabled { opacity: 0.6; cursor: default; }
+      #status { margin-top: 14px; font-weight: 700; }
+      #status.ok { color: #16a34a; }
+      #status.err { color: #ef4444; }
+      #gotcha { display: none; }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/" onclick="if (history.length > 1) { history.back(); return false; }">&larr; Back</a>
+    <h1>Contact Us</h1>
+    <p>Found a bug, or have a question or suggestion? Send us a message below and we'll reply by email.</p>
+
+    <form id="contact-form">
+      <label for="subject">Subject</label>
+      <input id="subject" name="subject" type="text" maxlength="100" required />
+      <div class="count"><span id="subject-count">0</span>/100</div>
+
+      <label for="email">Your email (so we can reply)</label>
+      <input id="email" name="email" type="email" required />
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" maxlength="1000" required></textarea>
+      <div class="count"><span id="message-count">0</span>/1000</div>
+
+      <input id="gotcha" name="hp" type="text" tabindex="-1" autocomplete="off" />
+
+      <button id="submit-btn" type="submit">Send Message</button>
+      <p id="status"></p>
+    </form>
+
+    <script>
+      // Our own Function relays this to our inbox via SendGrid — no email address ever appears in this page.
+      var CONTACT_ENDPOINT = 'https://lets-go-license-api-bhfjcdapdvaph5dv.centralus-01.azurewebsites.net/api/contact';
+
+      var form = document.getElementById('contact-form');
+      var subject = document.getElementById('subject');
+      var email = document.getElementById('email');
+      var message = document.getElementById('message');
+      var gotcha = document.getElementById('gotcha');
+      var status = document.getElementById('status');
+      var btn = document.getElementById('submit-btn');
+
+      subject.addEventListener('input', function () {
+        document.getElementById('subject-count').textContent = subject.value.length;
+      });
+      message.addEventListener('input', function () {
+        document.getElementById('message-count').textContent = message.value.length;
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        status.textContent = '';
+        status.className = '';
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+
+        fetch(CONTACT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subject: subject.value,
+            email: email.value,
+            message: message.value,
+            hp: gotcha.value,
+          }),
+        })
+          .then(function (res) {
+            if (res.ok) {
+              status.textContent = "✅ Thanks! We'll get back to you soon.";
+              status.className = 'ok';
+              form.reset();
+              document.getElementById('subject-count').textContent = '0';
+              document.getElementById('message-count').textContent = '0';
+            } else {
+              status.textContent = '❌ Something went wrong. Please try again.';
+              status.className = 'err';
+            }
+          })
+          .catch(function () {
+            status.textContent = '❌ Could not send — check your connection and try again.';
+            status.className = 'err';
+          })
+          .finally(function () {
+            btn.disabled = false;
+            btn.textContent = 'Send Message';
+          });
+      });
+    </script>
+  </body>
+</html>
