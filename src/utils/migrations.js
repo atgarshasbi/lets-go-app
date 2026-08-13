@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 const EXISTING_DATA_KEYS = ['sections', 'taskPool', 'completedToday', 'childName'];
 
@@ -17,6 +17,24 @@ export function runMigrations() {
               sections.map(s => ({ enabled: true, ...s }))
             ));
           }
+        }
+      } catch (_) {}
+    }
+
+    if (stored < 2) {
+      // v1 → v2: totalStars used to be a manually incremented counter;
+      // it's now derived from completedToday + bonusStars each render.
+      // Estimate the bonus-only portion so existing users don't lose stars
+      // that came from the bonus button rather than a completed task.
+      try {
+        const hasOldTotal = localStorage.getItem('totalStars') !== null;
+        const hasNewBonus = localStorage.getItem('bonusStars') !== null;
+        if (hasOldTotal && !hasNewBonus) {
+          const oldTotal = JSON.parse(localStorage.getItem('totalStars')) || 0;
+          const completedRaw = localStorage.getItem('completedToday');
+          const completed = completedRaw ? JSON.parse(completedRaw) : [];
+          const bonus = Math.max(0, oldTotal - (Array.isArray(completed) ? completed.length : 0));
+          localStorage.setItem('bonusStars', JSON.stringify(bonus));
         }
       } catch (_) {}
     }

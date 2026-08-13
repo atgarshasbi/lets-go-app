@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
-const VERIFY_URL = 'https://lets-go-license-api-bhfjcdapdvaph5dv.centralus-01.azurewebsites.net/api/verify-license';
+// Override locally via .env.local (VITE_VERIFY_URL=http://localhost:7071/api/verify-license)
+// to test against `func start` instead of production.
+const VERIFY_URL = import.meta.env.VITE_VERIFY_URL
+  || 'https://lets-go-license-api-bhfjcdapdvaph5dv.centralus-01.azurewebsites.net/api/verify-license';
 
 function randomId() {
   if (crypto.randomUUID) return crypto.randomUUID();
