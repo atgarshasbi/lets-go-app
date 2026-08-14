@@ -5,14 +5,15 @@ import StarJar from './StarJar';
 import CreatureTimer from './CreatureTimer';
 import CelebrationScreen from './CelebrationScreen';
 import InstallBanner from './InstallBanner';
+import UnlockBanner from './UnlockBanner';
 import ContactModal from './ContactModal';
 import { useTheme, useDarkMode } from '../theme';
 
 export default function ChildView({
   childName, totalStars, timerMinutes, setTimerMinutes, timerMaxMinutes, timerResetToken,
   timerPaused, sections, completedToday, celebrationCharacter,
-  soundEnabled, setSoundEnabled,
-  handleTaskToggle, handleResetToday, handleBonusStar, onParentPress, onTimerPause, onTimerResume,
+  soundEnabled, setSoundEnabled, unlocked,
+  handleTaskToggle, handleResetToday, handleBonusStar, onParentPress, onUnlockPress, onTimerPause, onTimerResume,
 }) {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useDarkMode();
@@ -45,6 +46,7 @@ export default function ChildView({
       {showContact && <ContactModal onClose={() => setShowContact(false)} />}
 
       <InstallBanner />
+      {!unlocked && <UnlockBanner onPress={onUnlockPress} />}
 
       <div className="text-center mb-3">
         <div className="text-5xl mb-1">🌟</div>

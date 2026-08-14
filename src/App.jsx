@@ -130,6 +130,7 @@ export default function App() {
           {...sharedState}
           timerResetToken={timerResetToken}
           onParentPress={() => setView('pin')}
+          onUnlockPress={() => setView('parent')}
         />
       )}
     </DarkModeContext.Provider>

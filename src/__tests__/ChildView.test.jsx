@@ -34,10 +34,12 @@ function renderChildView(overrides = {}) {
     celebrationCharacter: 'trophy',
     soundEnabled: true,
     setSoundEnabled: vi.fn(),
+    unlocked: true,
     handleTaskToggle: vi.fn(),
     handleResetToday: vi.fn(),
     handleBonusStar: vi.fn(),
     onParentPress: vi.fn(),
+    onUnlockPress: vi.fn(),
     onTimerPause: vi.fn(),
     onTimerResume: vi.fn(),
     ...overrides,
@@ -175,5 +177,26 @@ describe('ChildView — parent button', () => {
     renderChildView({ onParentPress });
     fireEvent.click(screen.getByText(/Parent/));
     expect(onParentPress).toHaveBeenCalledOnce();
+  });
+});
+
+describe('ChildView — unlock banner', () => {
+  it('shows the unlock banner when not unlocked', () => {
+    renderChildView({ unlocked: false });
+    expect(screen.getByText(/Unlock Everything/)).toBeInTheDocument();
+  });
+
+  it('hides the unlock banner once unlocked', () => {
+    renderChildView({ unlocked: true });
+    expect(screen.queryByText(/Unlock Everything/)).not.toBeInTheDocument();
+  });
+
+  it('calls onUnlockPress (not onParentPress) when the unlock banner is tapped, skipping the PIN', () => {
+    const onUnlockPress = vi.fn();
+    const onParentPress = vi.fn();
+    renderChildView({ unlocked: false, onUnlockPress, onParentPress });
+    fireEvent.click(screen.getByText(/Unlock Everything/));
+    expect(onUnlockPress).toHaveBeenCalledOnce();
+    expect(onParentPress).not.toHaveBeenCalled();
   });
 });

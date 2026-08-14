@@ -16,11 +16,34 @@ export default function LicenseUnlock({ verifying, error, onRedeem }) {
     <div className="bg-white rounded-2xl shadow p-5 text-center">
       <div className="text-4xl mb-2">🔓</div>
       <h2 className="text-lg font-black mb-1" style={{ color: theme.primary }}>
-        Unlock Parent Settings
+        Unlock the Full Experience
       </h2>
       <p className="text-sm text-gray-500 font-bold mb-4">
-        Editing routines, themes, celebrations, and the PIN requires a one-time unlock.
+        One small payment. No subscription, no ads, ever.
       </p>
+
+      <ul className="text-left text-sm font-bold text-gray-600 space-y-2 mb-5">
+        <li className="flex items-start gap-2">
+          <span className="text-lg leading-none">✏️</span>
+          <span>Build custom routines — add, remove & reorder any tasks</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-lg leading-none">🎨</span>
+          <span>6 fun color themes to match your kid&apos;s style</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-lg leading-none">🎉</span>
+          <span>6 celebration characters for the &quot;All Done!&quot; screen</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-lg leading-none">⏱️</span>
+          <span>A focus timer tuned to your own settings</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-lg leading-none">🔐</span>
+          <span>A parent PIN only you know</span>
+        </li>
+      </ul>
 
       <a
         href={GUMROAD_URL}

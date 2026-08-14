@@ -35,7 +35,7 @@ export const DEFAULT_SECTIONS = [
     id: 'after-school',
     title: 'After School',
     emoji: '🎒',
-    enabled: true,
+    enabled: false,
     tasks: [
       { id: 'as-backpack-away', emoji: '🎒', label: 'Backpack Away' },
       { id: 'as-wash', emoji: '🧼', label: 'Wash Hands' },
@@ -48,7 +48,7 @@ export const DEFAULT_SECTIONS = [
     id: 'chores',
     title: 'Chores',
     emoji: '🧹',
-    enabled: true,
+    enabled: false,
     tasks: [
       { id: 'ch-bed', emoji: '🛏️', label: 'Make Bed' },
       { id: 'ch-toys', emoji: '🧸', label: 'Put Away Toys' },
@@ -61,7 +61,7 @@ export const DEFAULT_SECTIONS = [
     id: 'bath',
     title: 'Bath Time',
     emoji: '🛁',
-    enabled: true,
+    enabled: false,
     tasks: [
       { id: 'ba-undress', emoji: '👕', label: 'Undress' },
       { id: 'ba-wash-body', emoji: '🧼', label: 'Wash Body' },
@@ -74,7 +74,7 @@ export const DEFAULT_SECTIONS = [
     id: 'screen-wind-down',
     title: 'Screen Time Wind-down',
     emoji: '📵',
-    enabled: true,
+    enabled: false,
     tasks: [
       { id: 'sw-timer', emoji: '⏲️', label: 'Set Timer' },
       { id: 'sw-save', emoji: '💾', label: 'Save Progress' },
