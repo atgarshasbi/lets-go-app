@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useTheme } from '../theme';
 
-// Our own Function relays this to our inbox via SendGrid — no email address ever ships in the app.
+// Our own Function relays this to our inbox via Resend.
 const CONTACT_ENDPOINT = 'https://lets-go-license-api-bhfjcdapdvaph5dv.centralus-01.azurewebsites.net/api/contact';
+const FALLBACK_EMAIL = 'contact@letsgoroutine.app';
 const SUBJECT_MAX = 100;
 const MESSAGE_MAX = 1000;
 
@@ -110,6 +111,13 @@ export default function ContactModal({ onClose }) {
             </button>
           </form>
         )}
+
+        <p className="text-xs text-gray-400 text-center mt-4">
+          Trouble sending? Email us directly at{' '}
+          <a href={`mailto:${FALLBACK_EMAIL}`} className="underline font-bold" style={{ color: theme.primary }}>
+            {FALLBACK_EMAIL}
+          </a>
+        </p>
       </div>
     </div>
   );

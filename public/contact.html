@@ -27,6 +27,8 @@
       #status.ok { color: #16a34a; }
       #status.err { color: #ef4444; }
       #gotcha { display: none; }
+      .fallback { margin-top: 16px; font-size: 13px; color: #9ca3af; text-align: center; }
+      .fallback a { font-weight: 700; }
     </style>
   </head>
   <body>
@@ -52,8 +54,10 @@
       <p id="status"></p>
     </form>
 
+    <p class="fallback">Trouble sending? Email us directly at <a href="mailto:contact@letsgoroutine.app">contact@letsgoroutine.app</a></p>
+
     <script>
-      // Our own Function relays this to our inbox via SendGrid — no email address ever appears in this page.
+      // Our own Function relays this to our inbox via Resend.
       var CONTACT_ENDPOINT = 'https://lets-go-license-api-bhfjcdapdvaph5dv.centralus-01.azurewebsites.net/api/contact';
 
       var form = document.getElementById('contact-form');
