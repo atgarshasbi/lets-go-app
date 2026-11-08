@@ -12,9 +12,12 @@ async function sendContactEmail({ subject, email, message }) {
 
   // The SDK reports failures via `error`, not by throwing — rethrow so
   // callers can keep using a plain try/catch like they would with any
-  // other email provider.
+  // other email provider. Bake name + message into the thrown message
+  // itself (not a nested property) since log viewers don't reliably
+  // expand nested error objects - we learned this the hard way with
+  // SendGrid's response.body showing as "[Array]" in Azure Log Stream.
   if (error) {
-    throw new Error(error.message || 'Resend send failed');
+    throw new Error(`Resend send failed: [${error.name || 'unknown'}] ${error.message || 'no message'}`);
   }
 }
 
