@@ -1,6 +1,6 @@
 const { app } = require('@azure/functions');
 const { validateContact } = require('../contactValidation');
-const { sendContactEmail } = require('../sendgrid');
+const { sendContactEmail } = require('../resend');
 
 app.http('contact', {
   methods: ['POST'],

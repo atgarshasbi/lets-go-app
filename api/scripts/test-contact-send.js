@@ -1,9 +1,9 @@
 // Manual local test — not part of the deployed Function, not run by CI.
-// Sends one real email via SendGrid using env vars from your own shell.
-const { sendContactEmail } = require('../src/sendgrid');
+// Sends one real email via Resend using env vars from your own shell.
+const { sendContactEmail } = require('../src/resend');
 
 async function main() {
-  const required = ['SENDGRID_API_KEY', 'SENDGRID_FROM_EMAIL', 'CONTACT_TO_EMAIL'];
+  const required = ['RESEND_API_KEY', 'RESEND_FROM_EMAIL', 'CONTACT_TO_EMAIL'];
   const missing = required.filter(k => !process.env[k]);
   if (missing.length) {
     console.error('Missing env vars:', missing.join(', '));
@@ -13,7 +13,7 @@ async function main() {
   await sendContactEmail({
     subject: 'Local test message',
     email: 'test-reply-to@example.com',
-    message: 'This is a local test of the contact form pipeline — if you got this, SendGrid is wired up correctly.',
+    message: 'This is a local test of the contact form pipeline — if you got this, Resend is wired up correctly.',
   });
 
   console.log('Sent! Check the inbox for CONTACT_TO_EMAIL.');
