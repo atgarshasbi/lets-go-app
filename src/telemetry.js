@@ -18,3 +18,4 @@ export const appInsights = new ApplicationInsights({
 
 appInsights.loadAppInsights();
 appInsights.trackPageView();
+appInsights.trackEvent({ name: 'app_launched' });
