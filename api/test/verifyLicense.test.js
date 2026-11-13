@@ -64,6 +64,83 @@ describe('verifyLicenseHandler', () => {
     });
   });
 
+  describe('marketing code', () => {
+    const originalMarketingCodes = process.env.MARKETING_CODES;
+
+    beforeEach(() => {
+      delete process.env.DEV_UNLOCK_CODE;
+      process.env.MARKETING_CODES = 'PROMO-AAAA-1111,PROMO-BBBB-2222';
+    });
+
+    afterEach(() => {
+      if (originalMarketingCodes === undefined) delete process.env.MARKETING_CODES;
+      else process.env.MARKETING_CODES = originalMarketingCodes;
+    });
+
+    it('unlocks and persists a device slot without calling Gumroad', async () => {
+      const upsert = vi.fn().mockResolvedValue({});
+      const read = vi.fn().mockResolvedValue({ resource: null });
+      getContainerFn.mockReturnValue({
+        item: () => ({ read }),
+        items: { upsert },
+      });
+
+      const result = await verifyLicenseHandler(
+        makeRequest({ licenseKey: 'PROMO-AAAA-1111', deviceId: 'device-1' }),
+        {},
+        { verifyGumroadLicenseFn, getContainerFn }
+      );
+
+      expect(result).toEqual({ status: 200, jsonBody: { status: 'unlocked' } });
+      expect(verifyGumroadLicenseFn).not.toHaveBeenCalled();
+      expect(upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          licenseKey: 'PROMO-AAAA-1111',
+          source: 'marketing',
+          activeDevices: [expect.objectContaining({ deviceId: 'device-1' })],
+        })
+      );
+    });
+
+    it('returns 409 when a marketing code is already used on another device', async () => {
+      const existingRecord = {
+        id: 'PROMO-AAAA-1111',
+        licenseKey: 'PROMO-AAAA-1111',
+        tier: 'basic',
+        maxSlots: 1,
+        activeDevices: [{ deviceId: 'other-device', activatedAt: '2026-01-01T00:00:00.000Z' }],
+      };
+      const upsert = vi.fn();
+      const read = vi.fn().mockResolvedValue({ resource: existingRecord });
+      getContainerFn.mockReturnValue({
+        item: () => ({ read }),
+        items: { upsert },
+      });
+
+      const result = await verifyLicenseHandler(
+        makeRequest({ licenseKey: 'PROMO-AAAA-1111', deviceId: 'device-2' }),
+        {},
+        { verifyGumroadLicenseFn, getContainerFn }
+      );
+
+      expect(result.status).toBe(409);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it('falls through to Gumroad when the key is not a marketing code', async () => {
+      verifyGumroadLicenseFn.mockResolvedValue({ valid: false, reason: 'License key not found' });
+
+      const result = await verifyLicenseHandler(
+        makeRequest({ licenseKey: 'not-a-marketing-code', deviceId: 'device-1' }),
+        {},
+        { verifyGumroadLicenseFn, getContainerFn }
+      );
+
+      expect(verifyGumroadLicenseFn).toHaveBeenCalledWith('not-a-marketing-code');
+      expect(result).toEqual({ status: 402, jsonBody: { error: 'License key not found' } });
+    });
+  });
+
   describe('normal Gumroad flow (no dev code set)', () => {
     beforeEach(() => {
       delete process.env.DEV_UNLOCK_CODE;

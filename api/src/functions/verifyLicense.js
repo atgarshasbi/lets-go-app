@@ -3,6 +3,7 @@ const { getContainer } = require('../cosmosClient');
 const { verifyGumroadLicense } = require('../gumroad');
 const { createDefaultRecord, assignDeviceSlot } = require('../deviceSlots');
 const { isDevUnlockCode } = require('../devUnlock');
+const { isMarketingCode } = require('../marketingCodes');
 
 // Real implementations are the defaults; tests pass fakes via `deps` so
 // this stays testable without mocking CommonJS `require()` calls.
@@ -28,9 +29,12 @@ async function verifyLicenseHandler(request, context, deps = {}) {
     return { status: 200, jsonBody: { status: 'unlocked' } };
   }
 
-  const gumroadResult = await verifyGumroadLicenseFn(licenseKey);
-  if (!gumroadResult.valid) {
-    return { status: 402, jsonBody: { error: gumroadResult.reason } };
+  const isMarketing = isMarketingCode(licenseKey);
+  if (!isMarketing) {
+    const gumroadResult = await verifyGumroadLicenseFn(licenseKey);
+    if (!gumroadResult.valid) {
+      return { status: 402, jsonBody: { error: gumroadResult.reason } };
+    }
   }
 
   const container = getContainerFn();
@@ -40,7 +44,7 @@ async function verifyLicenseHandler(request, context, deps = {}) {
     .then(r => r.resource)
     .catch(() => null);
 
-  const record = existing || createDefaultRecord(licenseKey);
+  const record = existing || createDefaultRecord(licenseKey, isMarketing ? 'marketing' : 'gumroad');
   const outcome = assignDeviceSlot(record, deviceId);
 
   if (outcome.status === 'slot_full') {

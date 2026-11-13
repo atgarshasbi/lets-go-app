@@ -1,7 +1,8 @@
-function createDefaultRecord(licenseKey) {
+function createDefaultRecord(licenseKey, source = 'gumroad') {
   return {
     id: licenseKey,
     licenseKey,
+    source,
     tier: 'basic',
     maxSlots: 1,
     activeDevices: [],

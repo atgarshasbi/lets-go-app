@@ -8,10 +8,17 @@ describe('createDefaultRecord', () => {
     expect(record).toEqual({
       id: 'ABC123',
       licenseKey: 'ABC123',
+      source: 'gumroad',
       tier: 'basic',
       maxSlots: 1,
       activeDevices: [],
     });
+  });
+
+  it('tags the record with a non-default source when given one', () => {
+    const record = createDefaultRecord('LGR-1111-2222', 'marketing');
+
+    expect(record.source).toBe('marketing');
   });
 });
 
